@@ -1,6 +1,6 @@
 /**
  * Google Cloud TTS Service
- * Türkçe ses üretimi — Neural2 modeli, chunk tabanlı
+ * Türkçe ses üretimi — WaveNet ve Chirp 3 HD desteği, chunk tabanlı
  */
 
 import { env } from "../../config/env";
@@ -16,9 +16,24 @@ const BASE_RETRY_DELAY_MS = 1000;
 // ──────── Tipler ────────
 
 export interface GoogleTTSOptions {
-  speakingRate?: number;   // 0.25 - 4.0, default 1.0
-  pitch?: number;          // -20.0 - 20.0, default 0
+  speakingRate?: number;   // 0.25 - 4.0 (WaveNet) | 0.5 - 2.0 (Chirp 3)
+  pitch?: number;          // -20.0 - 20.0 — Chirp 3 desteklemez, otomatik atlanır
   volumeGainDb?: number;   // -96.0 - 16.0, default 0
+}
+
+// ──────── Ses Tipi Tespiti ────────
+
+/** Chirp 3 HD ses mi? (pitch ve bazı parametreler desteklenmez) */
+export function isChirp3Voice(voiceName: string): boolean {
+  return voiceName.toLowerCase().includes("chirp3");
+}
+
+/** speakingRate'i ses tipine göre güvenli aralığa sıkıştır */
+function clampSpeakingRate(rate: number, voiceName: string): number {
+  if (isChirp3Voice(voiceName)) {
+    return Math.min(Math.max(rate, 0.5), 2.0);
+  }
+  return Math.min(Math.max(rate, 0.25), 4.0);
 }
 
 // ──────── Yardımcı: Retry ────────
@@ -61,19 +76,28 @@ async function generateChunk(
 
   const url = `${GOOGLE_TTS_API_BASE}/text:synthesize?key=${apiKey}`;
 
+  const safeRate = clampSpeakingRate(options.speakingRate ?? 1.0, voiceName);
+  const chirp3 = isChirp3Voice(voiceName);
+
+  const audioConfig: Record<string, unknown> = {
+    audioEncoding: "MP3",
+    sampleRateHertz: 24000,
+    speakingRate: safeRate,
+    volumeGainDb: options.volumeGainDb ?? 0,
+  };
+
+  // Chirp 3 pitch parametresini desteklemez — sadece WaveNet/Standard için ekle
+  if (!chirp3) {
+    audioConfig["pitch"] = options.pitch ?? 0;
+  }
+
   const body = {
     input: { text },
     voice: {
       languageCode: "tr-TR",
       name: voiceName,
     },
-    audioConfig: {
-      audioEncoding: "MP3",
-      sampleRateHertz: 24000,
-      speakingRate: options.speakingRate ?? 1.0,
-      pitch: options.pitch ?? 0,
-      volumeGainDb: options.volumeGainDb ?? 0,
-    },
+    audioConfig,
   };
 
   const response = await withRetry(async () => {
@@ -198,17 +222,45 @@ export function estimateDuration(charCount: number, speakingRate = 1.0): number 
 
 // ──────── Kullanılabilir Türkçe Sesler ────────
 
-export const GOOGLE_TURKISH_VOICES = [
-  // WaveNet — en kaliteli
+export const GOOGLE_WAVENET_VOICES = [
   { name: "tr-TR-Wavenet-A", gender: "female", description: "WaveNet kadın sesi — doğal ve akıcı" },
   { name: "tr-TR-Wavenet-B", gender: "male",   description: "WaveNet erkek sesi — doğal ve güvenilir" },
   { name: "tr-TR-Wavenet-C", gender: "female", description: "WaveNet kadın sesi — yumuşak ton" },
   { name: "tr-TR-Wavenet-D", gender: "female", description: "WaveNet kadın sesi — farklı ton" },
   { name: "tr-TR-Wavenet-E", gender: "male",   description: "WaveNet erkek sesi — alternatif" },
-  // Standard — daha düşük kalite ama daha ucuz
-  { name: "tr-TR-Standard-A", gender: "female", description: "Standard kadın sesi" },
-  { name: "tr-TR-Standard-B", gender: "male",   description: "Standard erkek sesi" },
-  { name: "tr-TR-Standard-C", gender: "female", description: "Standard kadın sesi — alternatif" },
-  { name: "tr-TR-Standard-D", gender: "female", description: "Standard kadın sesi — farklı ton" },
-  { name: "tr-TR-Standard-E", gender: "male",   description: "Standard erkek sesi — alternatif" },
 ] as const;
+
+/** @deprecated Eski ad — geriye dönük uyumluluk için */
+export const GOOGLE_TURKISH_VOICES = GOOGLE_WAVENET_VOICES;
+
+// ──────── Google TTS API'den Ses Listesi Çekme ────────
+
+interface GoogleVoiceAPIEntry {
+  name: string;
+  ssmlGender: "MALE" | "FEMALE" | "NEUTRAL" | "SSML_VOICE_GENDER_UNSPECIFIED";
+  naturalSampleRateHertz: number;
+  languageCodes: string[];
+}
+
+/**
+ * Google TTS API'den mevcut Türkçe sesleri çeker.
+ * WaveNet, Chirp 3 HD ve diğer tüm modelleri döner.
+ */
+export async function fetchAvailableVoices(): Promise<GoogleVoiceAPIEntry[]> {
+  const apiKey = env.GOOGLE_TTS_API_KEY;
+  if (!apiKey) {
+    logger.warn("GOOGLE_TTS_API_KEY tanımlı değil — ses listesi alınamıyor");
+    return [];
+  }
+
+  const url = `${GOOGLE_TTS_API_BASE}/voices?languageCode=tr-TR&key=${apiKey}`;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    throw new Error(`Google TTS ses listesi alınamadı ${res.status}: ${errText}`);
+  }
+
+  const data = (await res.json()) as { voices: GoogleVoiceAPIEntry[] };
+  return data.voices ?? [];
+}

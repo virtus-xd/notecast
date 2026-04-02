@@ -79,7 +79,7 @@ const DEFAULT_VOICES = [
   // ──── Google Cloud TTS — WaveNet Türkçe Sesler ────
   {
     elevenLabsId: "tr-TR-Wavenet-A",
-    name: "Aylin (Google)",
+    name: "Aylin (Google WaveNet)",
     description: "Google WaveNet kadın sesi — doğal ve akıcı Türkçe.",
     gender: "female",
     accent: "turkish",
@@ -89,7 +89,7 @@ const DEFAULT_VOICES = [
   },
   {
     elevenLabsId: "tr-TR-Wavenet-B",
-    name: "Burak (Google)",
+    name: "Burak (Google WaveNet)",
     description: "Google WaveNet erkek sesi — doğal ve güvenilir.",
     gender: "male",
     accent: "turkish",
@@ -99,7 +99,7 @@ const DEFAULT_VOICES = [
   },
   {
     elevenLabsId: "tr-TR-Wavenet-C",
-    name: "Ceren (Google)",
+    name: "Ceren (Google WaveNet)",
     description: "Google WaveNet kadın sesi — yumuşak ve sıcak ton.",
     gender: "female",
     accent: "turkish",
@@ -109,7 +109,7 @@ const DEFAULT_VOICES = [
   },
   {
     elevenLabsId: "tr-TR-Wavenet-D",
-    name: "Deniz (Google)",
+    name: "Deniz (Google WaveNet)",
     description: "Google WaveNet kadın sesi — farklı ton.",
     gender: "female",
     accent: "turkish",
@@ -119,7 +119,7 @@ const DEFAULT_VOICES = [
   },
   {
     elevenLabsId: "tr-TR-Wavenet-E",
-    name: "Emre (Google)",
+    name: "Emre (Google WaveNet)",
     description: "Google WaveNet erkek sesi — alternatif erkek tonu.",
     gender: "male",
     accent: "turkish",
@@ -127,6 +127,9 @@ const DEFAULT_VOICES = [
     isActive: true,
     sortOrder: 14,
   },
+  // ──── Google Cloud TTS — Chirp 3 HD (API key varsa dinamik eklenir) ────
+  // Not: Chirp 3 sesleri server startup'ta seed-google-voices.ts tarafından
+  // Google TTS API'den dinamik olarak çekilip eklenir.
 ] as const;
 
 // ──────── Sistem Konfigürasyonu ────────
