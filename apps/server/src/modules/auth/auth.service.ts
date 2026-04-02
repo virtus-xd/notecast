@@ -4,7 +4,7 @@
  */
 
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import crypto from "crypto";
 import { User } from "@prisma/client";
 import { env } from "../../config/env";
@@ -65,7 +65,7 @@ function generateAccessToken(user: User): string {
   };
 
   return jwt.sign(payload, env.JWT_SECRET, {
-    expiresIn: env.JWT_ACCESS_EXPIRY,
+    expiresIn: env.JWT_ACCESS_EXPIRY as SignOptions["expiresIn"],
   });
 }
 
