@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__supabase__list_tables",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql",
+      "mcp__render__list_services",
+      "Bash(pnpm install:*)",
+      "Bash(npx vercel:*)",
+      "Read(//c/Users/erdem/.local/share/com.vercel.cli/**)",
+      "Read(//c/Users/erdem/.vercel/**)",
+      "Read(//c/Users/erdem/**)",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "mcp__claude_ai_Vercel__get_deployment_build_logs",
+      "mcp__claude_ai_Vercel__get_deployment",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); events=json.loads\\(data[0]['text']\\)['events']; [print\\(e['text']\\) for e in events[-60:]]\")",
+      "Bash(python3 -c \" import json with open\\(r'C:\\\\Users\\\\erdem\\\\.claude\\\\projects\\\\C--Users-erdem-Desktop-Notecast\\\\4d301869-54ec-43cf-b055-da97be5ee0ca\\\\tool-results\\\\toolu_01GjxR2e8iwzbq2cEPb7nbhB.json'\\) as f: data = json.load\\(f\\) events = json.loads\\(data[0]['text']\\)['events'] for e in events[-80:]: print\\(e.get\\('text',''\\)\\) \")",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

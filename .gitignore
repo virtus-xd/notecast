@@ -53,3 +53,5 @@ minio-data/
 
 # Prisma
 apps/server/src/prisma/migrations/
+
+.vercel

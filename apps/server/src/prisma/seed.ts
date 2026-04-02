@@ -76,6 +76,57 @@ const DEFAULT_VOICES = [
     isActive: true,
     sortOrder: 6,
   },
+  // ──── Google Cloud TTS — Neural2 Türkçe Sesler ────
+  {
+    elevenLabsId: "tr-TR-Neural2-A",
+    name: "Aylin (Google)",
+    description: "Google Neural2 kadın sesi — doğal ve akıcı Türkçe.",
+    gender: "female",
+    accent: "turkish",
+    category: "academic",
+    isActive: true,
+    sortOrder: 10,
+  },
+  {
+    elevenLabsId: "tr-TR-Neural2-B",
+    name: "Burak (Google)",
+    description: "Google Neural2 erkek sesi — doğal ve güvenilir.",
+    gender: "male",
+    accent: "turkish",
+    category: "academic",
+    isActive: true,
+    sortOrder: 11,
+  },
+  {
+    elevenLabsId: "tr-TR-Neural2-C",
+    name: "Ceren (Google)",
+    description: "Google Neural2 kadın sesi — yumuşak ve sıcak ton.",
+    gender: "female",
+    accent: "turkish",
+    category: "conversational",
+    isActive: true,
+    sortOrder: 12,
+  },
+  {
+    elevenLabsId: "tr-TR-Neural2-D",
+    name: "Doruk (Google)",
+    description: "Google Neural2 erkek sesi — derin ve karakterli.",
+    gender: "male",
+    accent: "turkish",
+    category: "storytelling",
+    isActive: true,
+    sortOrder: 13,
+  },
+  {
+    elevenLabsId: "tr-TR-Neural2-E",
+    name: "Ece (Google)",
+    description: "Google Neural2 kadın sesi — genç ve enerjik.",
+    gender: "female",
+    accent: "turkish",
+    category: "general",
+    isActive: true,
+    sortOrder: 14,
+  },
 ] as const;
 
 // ──────── Sistem Konfigürasyonu ────────
@@ -114,6 +165,9 @@ async function seedVoices(): Promise<void> {
   console.log("🎙️  Sesler ekleniyor...");
 
   for (const voice of DEFAULT_VOICES) {
+    // Google TTS sesleri tr-TR ile başlar
+    const provider = voice.elevenLabsId.startsWith("tr-TR-") ? "google" : "elevenlabs";
+
     await prisma.voice.upsert({
       where: { elevenLabsId: voice.elevenLabsId },
       update: {
@@ -124,10 +178,11 @@ async function seedVoices(): Promise<void> {
         category: voice.category,
         isActive: voice.isActive,
         sortOrder: voice.sortOrder,
+        provider,
       },
-      create: voice,
+      create: { ...voice, provider },
     });
-    console.log(`  ✓ ${voice.name} (${voice.gender})`);
+    console.log(`  ✓ ${voice.name} (${voice.gender}, ${provider})`);
   }
 }
 

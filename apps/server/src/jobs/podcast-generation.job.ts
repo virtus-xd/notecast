@@ -15,7 +15,8 @@ import {
 import { findNoteById } from "../modules/notes/note.repository";
 import { generatePodcastScript } from "../shared/services/claude.service";
 import type { PodcastStyle } from "../shared/services/claude.service";
-import { generateSpeech, estimateDuration } from "../shared/services/elevenlabs.service";
+import { generateTTS, estimateTTSDuration } from "../shared/services/tts-router.service";
+import type { TTSProvider } from "../shared/services/tts-router.service";
 import { uploadBuffer } from "../shared/services/storage.service";
 import {
   emitPodcastProgress,
@@ -31,7 +32,8 @@ export interface PodcastGenerationJobData {
   podcastId: string;
   userId: string;
   noteId: string;
-  voiceId: string;   // ElevenLabs voice ID (elevenLabsId)
+  voiceId: string;       // Provider-specific voice ID
+  provider: TTSProvider; // "elevenlabs" | "google"
   style: PodcastStyle;
   speed: number;
 }
@@ -55,7 +57,7 @@ export function startPodcastGenerationWorker(): void {
     "generate-podcast",
     env.BULL_CONCURRENCY,
     async (job: Bull.Job<PodcastGenerationJobData>) => {
-      const { podcastId, userId, noteId, voiceId, style, speed } = job.data;
+      const { podcastId, userId, noteId, voiceId, provider, style, speed } = job.data;
 
       logger.info({ podcastId, noteId, style }, "Podcast oluşturma başladı");
 
@@ -92,24 +94,20 @@ export function startPodcastGenerationWorker(): void {
 
         logger.info({ podcastId, scriptLength: scriptText.length }, "Script oluşturuldu");
 
-        // ── 3. GENERATING_AUDIO — ElevenLabs TTS ──
+        // ── 3. GENERATING_AUDIO — TTS ──
         await updatePodcastStatus(podcastId, "GENERATING_AUDIO");
         await job.progress(PROGRESS.TTS_START);
-        emitPodcastProgress(userId, podcastId, "GENERATING_AUDIO", PROGRESS.TTS_START, "Ses üretiliyor...");
+        emitPodcastProgress(userId, podcastId, "GENERATING_AUDIO", PROGRESS.TTS_START, `Ses üretiliyor (${provider})...`);
 
         // Chunk bazlı ilerleme bildirimi
         let lastEmittedProgress: number = PROGRESS.TTS_START;
 
-        const audioBuffer = await generateSpeech(
-          scriptText,
+        const audioBuffer = await generateTTS({
+          text: scriptText,
           voiceId,
-          {
-            stability: 0.5,
-            similarityBoost: 0.8,
-            style: 0.3,
-            useSpeakerBoost: true,
-          },
-          (done, total) => {
+          provider: provider ?? "elevenlabs",
+          speed,
+          onProgress: (done, total) => {
             // Her chunk tamamlandığında ilerleme güncelle
             const ttsRange = PROGRESS.TTS_DONE - PROGRESS.TTS_START;
             const currentProgress = Math.round(
@@ -127,8 +125,8 @@ export function startPodcastGenerationWorker(): void {
                 `Ses üretiliyor... (${done}/${total})`
               );
             }
-          }
-        );
+          },
+        });
 
         await job.progress(PROGRESS.TTS_DONE);
         emitPodcastProgress(userId, podcastId, "MERGING", PROGRESS.TTS_DONE, "Ses kaydediliyor...");
@@ -147,7 +145,7 @@ export function startPodcastGenerationWorker(): void {
         await job.progress(PROGRESS.UPLOAD);
 
         // ── 5. READY ──
-        const audioDuration = estimateDuration(scriptText.length);
+        const audioDuration = estimateTTSDuration(scriptText.length, provider ?? "elevenlabs", speed);
 
         await updatePodcast(podcastId, {
           status: "READY",

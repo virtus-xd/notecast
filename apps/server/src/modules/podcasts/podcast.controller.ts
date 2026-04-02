@@ -160,6 +160,7 @@ export async function generatePodcastHandler(
         userId: user.id,
         noteId: note.id,
         voiceId: voice.elevenLabsId,
+        provider: (voice as unknown as { provider?: string }).provider ?? "elevenlabs",
         style: input.style,
         speed: input.speed,
       },

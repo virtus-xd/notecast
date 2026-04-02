@@ -48,6 +48,9 @@ const EnvSchema = z.object({
   GOOGLE_CLOUD_PROJECT_ID: z.string().optional(),
   GOOGLE_APPLICATION_CREDENTIALS: z.string().optional(),
 
+  // Google Cloud TTS (opsiyonel — ElevenLabs alternatifi)
+  GOOGLE_TTS_API_KEY: z.string().optional().default(""),
+
   // Email (opsiyonel)
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().int().positive().optional(),

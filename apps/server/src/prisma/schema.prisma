@@ -148,11 +148,12 @@ model Podcast {
 
 model Voice {
   id           String  @id @default(cuid())
-  elevenLabsId String  @unique
+  elevenLabsId String  @unique  // Provider-specific voice ID (ElevenLabs ID veya Google voice name)
   name         String
   description  String?
   gender       String
   accent       String  @default("turkish")
+  provider     String  @default("elevenlabs")  // "elevenlabs" | "google"
   previewUrl   String?
   category     String  @default("general")
   isActive     Boolean @default(true)
