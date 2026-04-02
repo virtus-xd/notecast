@@ -1,0 +1,45 @@
+version: "3.9"
+
+# Geliştirme ortamı için ek konfigürasyonlar
+# Kullanım: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: notcast_dev_password
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  # pgAdmin - Veritabanı yönetim arayüzü (sadece dev)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: notcast-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@notcast.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  # Redis Commander - Redis yönetim arayüzü (sadece dev)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: notcast-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis

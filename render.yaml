@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: notcast-server
+    env: node
+    plan: free
+    region: frankfurt
+    rootDir: apps/server
+    # buildCommand, rootDir (apps/server) içinden çalışır
+    buildCommand: >-
+      cd ../.. &&
+      npm install -g pnpm@9 &&
+      pnpm install --frozen-lockfile --filter @notcast/server... &&
+      pnpm --filter @notcast/server db:generate &&
+      pnpm --filter @notcast/server build
+    # startCommand, rootDir (apps/server) içinden çalışır
+    startCommand: npx prisma migrate deploy && node dist/app.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      # ── Aşağıdaki değişkenleri Render Dashboard > Environment'tan ekle ──
+      # DATABASE_URL      → Supabase connection string (?pgbouncer=true&connection_limit=1 ekle)
+      # REDIS_URL         → Upstash ioredis URL (rediss://default:TOKEN@host.upstash.io:6379)
+      # S3_ENDPOINT       → https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+      # S3_ACCESS_KEY     → Cloudflare R2 Access Key ID
+      # S3_SECRET_KEY     → Cloudflare R2 Secret Access Key
+      # S3_BUCKET         → notcast-uploads
+      # S3_REGION         → auto
+      # JWT_SECRET        → en az 32 karakter rastgele string
+      # JWT_REFRESH_SECRET → en az 32 karakter rastgele string
+      # JWT_ACCESS_EXPIRY  → 15m
+      # JWT_REFRESH_EXPIRY → 7d
+      # ELEVENLABS_API_KEY → ElevenLabs API key
+      # ANTHROPIC_API_KEY  → Anthropic API key
+      # GOOGLE_CLOUD_PROJECT_ID → Google Cloud proje ID
+      # FRONTEND_URL       → https://notcast.vercel.app (Vercel URL'in)
+      # CORS_ORIGINS       → https://notcast.vercel.app

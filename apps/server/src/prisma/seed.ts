@@ -1,0 +1,230 @@
+/**
+ * NotCast Veritabanı Seed
+ * Varsayılan sesler, test kullanıcısı ve sistem konfigürasyonu
+ *
+ * Çalıştırma: pnpm db:seed
+ */
+
+import { PrismaClient, UserRole } from "@prisma/client";
+import bcrypt from "bcrypt";
+
+const prisma = new PrismaClient();
+
+// ──────── Sabitler ────────
+const BCRYPT_SALT_ROUNDS = 12;
+
+// ──────── Varsayılan Türkçe Sesler ────────
+// ElevenLabs Voice Library'den seçilmiş Türkçe uyumlu sesler
+const DEFAULT_VOICES = [
+  {
+    elevenLabsId: "pNInz6obpgDQGcFmaJgB", // Adam
+    name: "Ahmet",
+    description: "Akademik ve net bir erkek sesi. Ders anlatımı için idealdir.",
+    gender: "male",
+    accent: "turkish",
+    category: "academic",
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    elevenLabsId: "21m00Tcm4TlvDq8ikWAM", // Rachel
+    name: "Elif",
+    description: "Sıcak ve güven verici bir kadın sesi. Her tür içerik için uygundur.",
+    gender: "female",
+    accent: "turkish",
+    category: "general",
+    isActive: true,
+    sortOrder: 2,
+  },
+  {
+    elevenLabsId: "AZnzlk1XvdvUeBnXmlld", // Domi
+    name: "Deniz",
+    description: "Genç ve enerjik bir kadın sesi. Konuşma stilindeki içerikler için harika.",
+    gender: "female",
+    accent: "turkish",
+    category: "conversational",
+    isActive: true,
+    sortOrder: 3,
+  },
+  {
+    elevenLabsId: "ErXwobaYiN019PkySvjV", // Antoni
+    name: "Mert",
+    description: "Rahatlatıcı ve akıcı bir erkek sesi. Uzun form dinlemeler için idealdir.",
+    gender: "male",
+    accent: "turkish",
+    category: "storytelling",
+    isActive: true,
+    sortOrder: 4,
+  },
+  {
+    elevenLabsId: "MF3mGyEYCl7XYWbV9V6O", // Elli
+    name: "Zeynep",
+    description: "Profesyonel ve güçlü bir kadın sesi. Özet ve tekrar içerikleri için uygun.",
+    gender: "female",
+    accent: "turkish",
+    category: "academic",
+    isActive: true,
+    sortOrder: 5,
+  },
+  {
+    elevenLabsId: "TxGEqnHWrfWFTfGW9XjX", // Josh
+    name: "Can",
+    description: "Derin ve etkileyici bir erkek sesi. Dramatik anlatımlar için mükemmel.",
+    gender: "male",
+    accent: "turkish",
+    category: "storytelling",
+    isActive: true,
+    sortOrder: 6,
+  },
+] as const;
+
+// ──────── Sistem Konfigürasyonu ────────
+const SYSTEM_CONFIGS = [
+  {
+    key: "free_monthly_podcast_limit",
+    value: "3",
+  },
+  {
+    key: "max_image_size_mb",
+    value: "10",
+  },
+  {
+    key: "max_pdf_size_mb",
+    value: "20",
+  },
+  {
+    key: "max_text_size_mb",
+    value: "1",
+  },
+  {
+    key: "elevenlabs_model",
+    value: "eleven_multilingual_v2",
+  },
+  {
+    key: "anthropic_model",
+    value: "claude-sonnet-4-20250514",
+  },
+  {
+    key: "maintenance_mode",
+    value: "false",
+  },
+] as const;
+
+async function seedVoices(): Promise<void> {
+  console.log("🎙️  Sesler ekleniyor...");
+
+  for (const voice of DEFAULT_VOICES) {
+    await prisma.voice.upsert({
+      where: { elevenLabsId: voice.elevenLabsId },
+      update: {
+        name: voice.name,
+        description: voice.description,
+        gender: voice.gender,
+        accent: voice.accent,
+        category: voice.category,
+        isActive: voice.isActive,
+        sortOrder: voice.sortOrder,
+      },
+      create: voice,
+    });
+    console.log(`  ✓ ${voice.name} (${voice.gender})`);
+  }
+}
+
+async function seedSystemConfig(): Promise<void> {
+  console.log("⚙️  Sistem konfigürasyonu ekleniyor...");
+
+  for (const config of SYSTEM_CONFIGS) {
+    await prisma.systemConfig.upsert({
+      where: { key: config.key },
+      update: { value: config.value },
+      create: config,
+    });
+    console.log(`  ✓ ${config.key} = ${config.value}`);
+  }
+}
+
+async function seedTestUsers(): Promise<void> {
+  // Sadece geliştirme ortamında test kullanıcıları oluştur
+  if (process.env["NODE_ENV"] === "production") {
+    console.log("⏭️  Production: Test kullanıcıları atlanıyor");
+    return;
+  }
+
+  console.log("👤  Test kullanıcıları ekleniyor...");
+
+  const testPasswordHash = await bcrypt.hash("Test1234!", BCRYPT_SALT_ROUNDS);
+  const adminPasswordHash = await bcrypt.hash("Admin1234!", BCRYPT_SALT_ROUNDS);
+
+  // Free tier test kullanıcısı
+  const testUser = await prisma.user.upsert({
+    where: { email: "test@notcast.dev" },
+    update: {},
+    create: {
+      email: "test@notcast.dev",
+      passwordHash: testPasswordHash,
+      name: "Test Kullanıcı",
+      role: UserRole.FREE,
+      emailVerified: true,
+      monthlyCredits: 3,
+    },
+  });
+  console.log(`  ✓ ${testUser.email} (FREE)`);
+
+  // Premium test kullanıcısı
+  const premiumUser = await prisma.user.upsert({
+    where: { email: "premium@notcast.dev" },
+    update: {},
+    create: {
+      email: "premium@notcast.dev",
+      passwordHash: testPasswordHash,
+      name: "Premium Kullanıcı",
+      role: UserRole.PREMIUM,
+      emailVerified: true,
+      monthlyCredits: 999,
+    },
+  });
+  console.log(`  ✓ ${premiumUser.email} (PREMIUM)`);
+
+  // Admin kullanıcısı
+  const adminUser = await prisma.user.upsert({
+    where: { email: "admin@notcast.dev" },
+    update: {},
+    create: {
+      email: "admin@notcast.dev",
+      passwordHash: adminPasswordHash,
+      name: "Admin",
+      role: UserRole.ADMIN,
+      emailVerified: true,
+      monthlyCredits: 999,
+    },
+  });
+  console.log(`  ✓ ${adminUser.email} (ADMIN)`);
+}
+
+async function main(): Promise<void> {
+  console.log("\n🌱 NotCast Seed başlatılıyor...\n");
+
+  await seedVoices();
+  await seedSystemConfig();
+  await seedTestUsers();
+
+  console.log("\n✅ Seed tamamlandı!\n");
+
+  if (process.env["NODE_ENV"] !== "production") {
+    console.log("Test hesapları:");
+    console.log("  📧 test@notcast.dev     🔑 Test1234!   (FREE)");
+    console.log("  📧 premium@notcast.dev  🔑 Test1234!   (PREMIUM)");
+    console.log("  📧 admin@notcast.dev    🔑 Admin1234!  (ADMIN)");
+    console.log();
+  }
+}
+
+main()
+  .catch((err) => {
+    console.error("❌ Seed hatası:", err);
+    process.exit(1);
+  })
+  .finally(() => {
+    void prisma.$disconnect();
+  });

@@ -1,0 +1,168 @@
+// NotCast Prisma Şeması
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  FREE
+  PREMIUM
+  ADMIN
+}
+
+enum NoteStatus {
+  UPLOADED
+  PREPROCESSING
+  OCR_PROCESSING
+  TEXT_EXTRACTED
+  ANALYZING
+  READY
+  ERROR
+}
+
+enum PodcastStatus {
+  PENDING
+  SCRIPT_WRITING
+  GENERATING_AUDIO
+  MERGING
+  READY
+  ERROR
+}
+
+enum UploadType {
+  IMAGE
+  PDF
+  TEXT
+  DOCUMENT
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  passwordHash   String
+  name           String
+  avatarUrl      String?
+  role           UserRole  @default(FREE)
+  emailVerified  Boolean   @default(false)
+  verifyToken    String?
+  resetToken     String?
+  resetTokenExp  DateTime?
+
+  preferredVoiceId String?
+
+  notes    Note[]
+  podcasts Podcast[]
+  sessions Session[]
+
+  monthlyCredits  Int      @default(3)
+  creditsUsed     Int      @default(0)
+  creditsResetAt  DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model Note {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+
+  uploadType       UploadType
+  originalFileUrl  String
+  originalFileName String
+  fileSizeBytes    Int
+  mimeType         String
+
+  status           NoteStatus @default(UPLOADED)
+  rawExtractedText String?    @db.Text
+  processedText    String?    @db.Text
+
+  sections Json?
+  tags     String[]
+  subject  String?
+
+  errorMessage           String?
+  processingStartedAt    DateTime?
+  processingCompletedAt  DateTime?
+
+  podcasts Podcast[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
+}
+
+model Podcast {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  noteId String
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+
+  voiceId   String
+  voiceName String
+
+  status     PodcastStatus @default(PENDING)
+  scriptText String?       @db.Text
+
+  audioUrl       String?
+  audioDuration  Int?
+  audioSizeBytes Int?
+
+  speed Float  @default(1.0)
+  style String @default("educational")
+
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
+}
+
+model Voice {
+  id           String  @id @default(cuid())
+  elevenLabsId String  @unique
+  name         String
+  description  String?
+  gender       String
+  accent       String  @default("turkish")
+  previewUrl   String?
+  category     String  @default("general")
+  isActive     Boolean @default(true)
+  sortOrder    Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+}
