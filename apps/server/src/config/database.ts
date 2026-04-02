@@ -6,9 +6,6 @@
 import { PrismaClient } from "@prisma/client";
 import { logger } from "../shared/utils/logger";
 
-// Bağlantı havuzu boyutu — CPU çekirdek sayısına göre ayarlanır
-const CONNECTION_POOL_SIZE = parseInt(process.env["DB_POOL_SIZE"] ?? "10", 10);
-
 const prismaClientSingleton = () => {
   return new PrismaClient({
     log: [
@@ -17,11 +14,6 @@ const prismaClientSingleton = () => {
       { emit: "event", level: "warn" },
     ],
     errorFormat: process.env["NODE_ENV"] === "production" ? "minimal" : "pretty",
-    datasources: {
-      db: {
-        url: `${process.env["DATABASE_URL"]}?connection_limit=${CONNECTION_POOL_SIZE}&pool_timeout=20`,
-      },
-    },
   });
 };
 

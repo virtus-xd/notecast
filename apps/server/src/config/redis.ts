@@ -7,6 +7,8 @@ import Redis from "ioredis";
 import { env } from "./env";
 import { logger } from "../shared/utils/logger";
 
+const isTLS = env.REDIS_URL.startsWith("rediss://");
+
 export const redis = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: 3,
   retryStrategy(times) {
@@ -14,6 +16,7 @@ export const redis = new Redis(env.REDIS_URL, {
     return delay;
   },
   lazyConnect: true,
+  ...(isTLS && { tls: { rejectUnauthorized: false } }),
 });
 
 redis.on("connect", () => {

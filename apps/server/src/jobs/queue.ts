@@ -7,9 +7,15 @@ import Bull from "bull";
 import { env } from "../config/env";
 import { logger } from "../shared/utils/logger";
 
+// ──────── TLS Desteği (Upstash rediss://) ────────
+
+const isTLS = env.REDIS_URL.startsWith("rediss://");
+const bullRedisOpts = isTLS ? { redis: { tls: { rejectUnauthorized: false } } } : {};
+
 // ──────── Queue Tanımları ────────
 
 export const noteProcessingQueue = new Bull("note-processing", env.REDIS_URL, {
+  ...bullRedisOpts,
   defaultJobOptions: {
     attempts: env.JOB_RETRY_ATTEMPTS,
     backoff: {
@@ -22,6 +28,7 @@ export const noteProcessingQueue = new Bull("note-processing", env.REDIS_URL, {
 });
 
 export const podcastGenerationQueue = new Bull("podcast-generation", env.REDIS_URL, {
+  ...bullRedisOpts,
   defaultJobOptions: {
     attempts: env.JOB_RETRY_ATTEMPTS,
     backoff: {
