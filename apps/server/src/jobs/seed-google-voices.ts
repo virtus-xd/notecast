@@ -1,7 +1,7 @@
 /**
  * Google TTS seslerini veritabanına ekleyen lightweight seed script.
  * Production'da tsx gerektirmez — derlenmiş JS olarak çalışır.
- * Dockerfile CMD'de kullanılır.
+ * Server startup'ta otomatik çalışır.
  */
 
 import { prisma } from "../config/database";
@@ -9,9 +9,9 @@ import { logger } from "../shared/utils/logger";
 
 const GOOGLE_VOICES = [
   {
-    elevenLabsId: "tr-TR-Neural2-A",
+    elevenLabsId: "tr-TR-Wavenet-A",
     name: "Aylin (Google)",
-    description: "Google Neural2 kadın sesi — doğal ve akıcı Türkçe.",
+    description: "Google WaveNet kadın sesi — doğal ve akıcı Türkçe.",
     gender: "female",
     accent: "turkish",
     provider: "google",
@@ -20,9 +20,9 @@ const GOOGLE_VOICES = [
     sortOrder: 10,
   },
   {
-    elevenLabsId: "tr-TR-Neural2-B",
+    elevenLabsId: "tr-TR-Wavenet-B",
     name: "Burak (Google)",
-    description: "Google Neural2 erkek sesi — doğal ve güvenilir.",
+    description: "Google WaveNet erkek sesi — doğal ve güvenilir.",
     gender: "male",
     accent: "turkish",
     provider: "google",
@@ -31,9 +31,9 @@ const GOOGLE_VOICES = [
     sortOrder: 11,
   },
   {
-    elevenLabsId: "tr-TR-Neural2-C",
+    elevenLabsId: "tr-TR-Wavenet-C",
     name: "Ceren (Google)",
-    description: "Google Neural2 kadın sesi — yumuşak ve sıcak ton.",
+    description: "Google WaveNet kadın sesi — yumuşak ve sıcak ton.",
     gender: "female",
     accent: "turkish",
     provider: "google",
@@ -42,30 +42,43 @@ const GOOGLE_VOICES = [
     sortOrder: 12,
   },
   {
-    elevenLabsId: "tr-TR-Neural2-D",
-    name: "Doruk (Google)",
-    description: "Google Neural2 erkek sesi — derin ve karakterli.",
-    gender: "male",
-    accent: "turkish",
-    provider: "google",
-    category: "storytelling",
-    isActive: true,
-    sortOrder: 13,
-  },
-  {
-    elevenLabsId: "tr-TR-Neural2-E",
-    name: "Ece (Google)",
-    description: "Google Neural2 kadın sesi — genç ve enerjik.",
+    elevenLabsId: "tr-TR-Wavenet-D",
+    name: "Deniz (Google)",
+    description: "Google WaveNet kadın sesi — farklı ton.",
     gender: "female",
     accent: "turkish",
     provider: "google",
     category: "general",
+    isActive: true,
+    sortOrder: 13,
+  },
+  {
+    elevenLabsId: "tr-TR-Wavenet-E",
+    name: "Emre (Google)",
+    description: "Google WaveNet erkek sesi — alternatif erkek tonu.",
+    gender: "male",
+    accent: "turkish",
+    provider: "google",
+    category: "storytelling",
     isActive: true,
     sortOrder: 14,
   },
 ] as const;
 
 export async function seedGoogleVoices(): Promise<void> {
+  // Önce eski Neural2 seslerini sil (artık geçersiz)
+  try {
+    await prisma.voice.deleteMany({
+      where: {
+        elevenLabsId: {
+          startsWith: "tr-TR-Neural2-",
+        },
+      },
+    });
+  } catch {
+    // silme başarısız olursa devam et
+  }
+
   for (const voice of GOOGLE_VOICES) {
     try {
       await prisma.voice.upsert({
@@ -79,7 +92,7 @@ export async function seedGoogleVoices(): Promise<void> {
       });
       logger.info(`Google ses eklendi: ${voice.name}`);
     } catch (err) {
-      logger.warn({ err, voice: voice.name }, "Google ses eklenemedi (muhtemelen zaten var)");
+      logger.warn({ err, voice: voice.name }, "Google ses eklenemedi");
     }
   }
 }

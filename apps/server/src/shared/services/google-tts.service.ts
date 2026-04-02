@@ -199,14 +199,16 @@ export function estimateDuration(charCount: number, speakingRate = 1.0): number 
 // ──────── Kullanılabilir Türkçe Sesler ────────
 
 export const GOOGLE_TURKISH_VOICES = [
-  { name: "tr-TR-Neural2-A", gender: "female", description: "Neural2 kadın sesi — doğal ve akıcı" },
-  { name: "tr-TR-Neural2-B", gender: "male",   description: "Neural2 erkek sesi — doğal ve güvenilir" },
-  { name: "tr-TR-Neural2-C", gender: "female", description: "Neural2 kadın sesi — yumuşak ton" },
-  { name: "tr-TR-Neural2-D", gender: "male",   description: "Neural2 erkek sesi — derin ton" },
-  { name: "tr-TR-Neural2-E", gender: "female", description: "Neural2 kadın sesi — genç ve enerjik" },
-  { name: "tr-TR-Wavenet-A", gender: "female", description: "WaveNet kadın sesi" },
-  { name: "tr-TR-Wavenet-B", gender: "male",   description: "WaveNet erkek sesi" },
-  { name: "tr-TR-Wavenet-C", gender: "female", description: "WaveNet kadın sesi — alternatif" },
+  // WaveNet — en kaliteli
+  { name: "tr-TR-Wavenet-A", gender: "female", description: "WaveNet kadın sesi — doğal ve akıcı" },
+  { name: "tr-TR-Wavenet-B", gender: "male",   description: "WaveNet erkek sesi — doğal ve güvenilir" },
+  { name: "tr-TR-Wavenet-C", gender: "female", description: "WaveNet kadın sesi — yumuşak ton" },
   { name: "tr-TR-Wavenet-D", gender: "female", description: "WaveNet kadın sesi — farklı ton" },
   { name: "tr-TR-Wavenet-E", gender: "male",   description: "WaveNet erkek sesi — alternatif" },
+  // Standard — daha düşük kalite ama daha ucuz
+  { name: "tr-TR-Standard-A", gender: "female", description: "Standard kadın sesi" },
+  { name: "tr-TR-Standard-B", gender: "male",   description: "Standard erkek sesi" },
+  { name: "tr-TR-Standard-C", gender: "female", description: "Standard kadın sesi — alternatif" },
+  { name: "tr-TR-Standard-D", gender: "female", description: "Standard kadın sesi — farklı ton" },
+  { name: "tr-TR-Standard-E", gender: "male",   description: "Standard erkek sesi — alternatif" },
 ] as const;
