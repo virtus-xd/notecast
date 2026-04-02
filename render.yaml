@@ -10,7 +10,7 @@ services:
       cd ../.. &&
       npm install -g pnpm@9 &&
       pnpm install --no-frozen-lockfile --filter @notcast/server... &&
-      pnpm --filter @notcast/server db:generate &&
+      ./node_modules/.bin/prisma generate --schema=apps/server/src/prisma/schema.prisma &&
       pnpm --filter @notcast/server build
     # startCommand, rootDir (apps/server) içinden çalışır
     startCommand: npx prisma migrate deploy && node dist/app.js
