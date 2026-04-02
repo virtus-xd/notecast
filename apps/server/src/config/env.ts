@@ -24,7 +24,7 @@ const EnvSchema = z.object({
   // Auth
   JWT_SECRET: z.string().min(32, "JWT_SECRET en az 32 karakter olmalı"),
   JWT_REFRESH_SECRET: z.string().min(32, "JWT_REFRESH_SECRET en az 32 karakter olmalı"),
-  JWT_ACCESS_EXPIRY: z.string().default("15m"),
+  JWT_ACCESS_EXPIRY: z.string().default("7d"),
   JWT_REFRESH_EXPIRY: z.string().default("7d"),
 
   // Storage (S3/MinIO)
