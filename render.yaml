@@ -14,7 +14,7 @@ services:
       prisma generate --schema=apps/server/src/prisma/schema.prisma &&
       pnpm --filter @notcast/server build
     # startCommand, rootDir (apps/server) içinden çalışır
-    startCommand: npx prisma migrate deploy && node dist/app.js
+    startCommand: npx prisma db push --skip-generate && node dist/app.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
