@@ -11,7 +11,7 @@ import { ERROR_CODES, HTTP_STATUS } from "@notcast/shared";
 
 export function errorHandler(
   err: unknown,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ): void {
@@ -36,7 +36,7 @@ export function errorHandler(
     if (err.statusCode >= 500) {
       logger.error({ err, stack: err.stack }, "AppError");
     } else {
-      logger.warn({ code: err.code, message: err.message }, "AppError");
+      logger.warn({ code: err.code, message: err.message, method: req.method, url: req.originalUrl }, "AppError");
     }
 
     res.status(err.statusCode).json({
