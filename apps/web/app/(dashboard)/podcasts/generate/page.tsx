@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
@@ -114,7 +114,7 @@ function GeneratingCard({ podcastId }: { podcastId: string }) {
 
 // ──────── Ana Sayfa ────────
 
-export default function GeneratePodcastPage() {
+function GeneratePodcastContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedNoteId = searchParams.get("noteId") ?? "";
@@ -360,5 +360,13 @@ export default function GeneratePodcastPage() {
         )}
       </Button>
     </div>
+  );
+}
+
+export default function GeneratePodcastPage() {
+  return (
+    <Suspense>
+      <GeneratePodcastContent />
+    </Suspense>
   );
 }
