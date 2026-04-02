@@ -74,13 +74,22 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
+      const storedRefreshToken = localStorage.getItem("notcast-refresh-token");
+      if (!storedRefreshToken) {
+        throw new Error("No refresh token");
+      }
+
       const { data } = await apiClient.post<{
         success: boolean;
-        data: { accessToken: string };
-      }>("/auth/refresh");
+        data: { accessToken: string; refreshToken?: string };
+      }>("/auth/refresh", { refreshToken: storedRefreshToken });
 
       const newToken = data.data.accessToken;
       localStorage.setItem("notcast-auth-token", newToken);
+      // Refresh token rotation: yeni token gelirse kaydet
+      if (data.data.refreshToken) {
+        localStorage.setItem("notcast-refresh-token", data.data.refreshToken);
+      }
 
       if (originalRequest.headers) {
         originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
@@ -91,6 +100,7 @@ apiClient.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null);
       localStorage.removeItem("notcast-auth-token");
+      localStorage.removeItem("notcast-refresh-token");
       // Auth store'u temizle
       window.dispatchEvent(new CustomEvent("auth:logout"));
       return Promise.reject(refreshError);

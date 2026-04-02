@@ -91,6 +91,7 @@ export function loginHandler(
           data: {
             user: safeUser,
             accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
             expiresIn: tokens.expiresIn,
           },
         });
@@ -135,6 +136,7 @@ export async function refreshHandler(
       success: true,
       data: {
         accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
         expiresIn: tokens.expiresIn,
       },
     });

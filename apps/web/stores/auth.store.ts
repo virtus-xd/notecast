@@ -36,10 +36,11 @@ export const useAuthStore = create<AuthState>()(
         try {
           const { data } = await apiClient.post<{
             success: boolean;
-            data: { user: User; accessToken: string; expiresIn: number };
+            data: { user: User; accessToken: string; refreshToken: string; expiresIn: number };
           }>("/auth/login", { email, password });
 
           localStorage.setItem("notcast-auth-token", data.data.accessToken);
+          localStorage.setItem("notcast-refresh-token", data.data.refreshToken);
           // Middleware'in oturum durumunu görebilmesi için frontend cookie set et
           document.cookie = `notcast-session=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
           set({ user: data.data.user, isAuthenticated: true });
@@ -59,11 +60,13 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
-          await apiClient.post("/auth/logout");
+          const refreshToken = localStorage.getItem("notcast-refresh-token");
+          await apiClient.post("/auth/logout", { refreshToken });
         } catch {
           // Hata olsa bile local state temizle
         } finally {
           localStorage.removeItem("notcast-auth-token");
+          localStorage.removeItem("notcast-refresh-token");
           // Session cookie'yi temizle
           document.cookie = "notcast-session=; path=/; max-age=0";
           set({ user: null, isAuthenticated: false });
@@ -86,6 +89,7 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () => {
         localStorage.removeItem("notcast-auth-token");
+        localStorage.removeItem("notcast-refresh-token");
         document.cookie = "notcast-session=; path=/; max-age=0";
         set({ user: null, isAuthenticated: false });
       },
