@@ -8,9 +8,9 @@ services:
     # buildCommand, rootDir (apps/server) içinden çalışır
     buildCommand: >-
       cd ../.. &&
-      npm install -g pnpm@9 &&
+      npm install -g pnpm@9 prisma &&
       pnpm install --no-frozen-lockfile &&
-      pnpm --filter @notcast/server exec prisma generate &&
+      prisma generate --schema=apps/server/src/prisma/schema.prisma &&
       pnpm --filter @notcast/server build
     # startCommand, rootDir (apps/server) içinden çalışır
     startCommand: npx prisma migrate deploy && node dist/app.js
