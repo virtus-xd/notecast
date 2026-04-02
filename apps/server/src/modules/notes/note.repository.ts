@@ -103,7 +103,12 @@ export async function findNotesByUserId(options: NoteListOptions): Promise<{
  * Not oluştur
  */
 export async function createNote(data: CreateNoteData): Promise<Note> {
-  return prisma.note.create({ data });
+  return prisma.note.create({
+    data: {
+      ...data,
+      tags: [],
+    },
+  });
 }
 
 /**
