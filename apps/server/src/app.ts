@@ -178,6 +178,14 @@ httpServer.listen(env.PORT, () => {
     logger.error({ err }, "S3 bucket init hatası")
   );
 
+  // Google TTS seslerini veritabanına ekle (upsert — zaten varsa günceller)
+  import("./jobs/seed-google-voices").then(({ seedGoogleVoices, ensureProviderField }) => {
+    void ensureProviderField().catch(() => {});
+    void seedGoogleVoices().catch((err) =>
+      logger.warn({ err }, "Google sesleri seed edilemedi")
+    );
+  }).catch(() => {});
+
   // Job worker'ları başlat
   startNoteProcessingWorker();
   startPodcastGenerationWorker();
