@@ -101,7 +101,8 @@ export default function PodcastsPage() {
     if (!podcast.audioUrl) return;
 
     const apiBase = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:3001/api";
-    const streamUrl = `${apiBase}/podcasts/${podcast.id}/stream`;
+    const token = localStorage.getItem("notcast-auth-token") ?? "";
+    const streamUrl = `${apiBase}/podcasts/${podcast.id}/stream?token=${encodeURIComponent(token)}`;
 
     if (currentTrack?.podcastId === podcast.id) {
       if (isPlaying) pause();

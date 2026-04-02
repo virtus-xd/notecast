@@ -3,7 +3,7 @@
  */
 
 import { Router } from "express";
-import { requireAuth } from "../auth/auth.middleware";
+import { requireAuth, queryTokenAuth } from "../auth/auth.middleware";
 import {
   listPodcastsHandler,
   getPodcastHandler,
@@ -18,7 +18,12 @@ import {
 
 export const podcastsRouter = Router();
 
-// Tüm podcast route'ları kimlik doğrulama gerektiriyor
+// Stream ve download — <audio>/<a> elementleri Authorization header gönderemez,
+// bu yüzden query param ile token doğrulama kullanılır
+podcastsRouter.get("/:id/stream", queryTokenAuth, streamPodcastHandler);
+podcastsRouter.get("/:id/download", queryTokenAuth, downloadPodcastHandler);
+
+// Diğer tüm podcast route'ları standard JWT auth gerektirir
 podcastsRouter.use(requireAuth);
 
 podcastsRouter.get("/", listPodcastsHandler);
@@ -28,5 +33,3 @@ podcastsRouter.delete("/:id", deletePodcastHandler);
 podcastsRouter.post("/:id/regenerate", regeneratePodcastHandler);
 podcastsRouter.get("/:id/script", getPodcastScriptHandler);
 podcastsRouter.get("/:id/status", getPodcastStatusHandler);
-podcastsRouter.get("/:id/stream", streamPodcastHandler);
-podcastsRouter.get("/:id/download", downloadPodcastHandler);

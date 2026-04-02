@@ -83,3 +83,17 @@ export function optionalAuth(req: Request, res: Response, next: NextFunction): v
     }
   )(req, res, next);
 }
+
+/**
+ * Query parameter'dan JWT token ile kimlik doğrulama.
+ * <audio src> ve <a href> gibi elementler Authorization header gönderemez,
+ * bu yüzden token URL query param olarak gönderilir: ?token=xxx
+ * Token'ı Authorization header'a kopyalayıp requireAuth'a devreder.
+ */
+export function queryTokenAuth(req: Request, res: Response, next: NextFunction): void {
+  const token = (req.query as Record<string, string>)["token"];
+  if (token && !req.headers["authorization"]) {
+    req.headers["authorization"] = `Bearer ${token}`;
+  }
+  requireAuth(req, res, next);
+}

@@ -200,7 +200,7 @@ export default function PodcastDetailPage() {
                 Oynatıcı
               </p>
               <a
-                href={`${process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:3001/api"}/podcasts/${podcast.id}/download`}
+                href={`${process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:3001/api"}/podcasts/${podcast.id}/download?token=${encodeURIComponent(localStorage.getItem("notcast-auth-token") ?? "")}`}
                 className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 download
               >
@@ -213,7 +213,7 @@ export default function PodcastDetailPage() {
                 title: podcast.title,
                 voiceName: podcast.voiceName,
                 subject: podcast.note?.subject ?? null,
-                streamUrl: `${process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:3001/api"}/podcasts/${podcast.id}/stream`,
+                streamUrl: `${process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:3001/api"}/podcasts/${podcast.id}/stream?token=${encodeURIComponent(localStorage.getItem("notcast-auth-token") ?? "")}`,
               }}
             />
           </CardContent>
