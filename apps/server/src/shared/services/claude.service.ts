@@ -3,7 +3,7 @@
  * Anthropic SDK wrapper — metin analizi ve podcast script üretimi
  */
 
-import Anthropic from "anthropic";
+import Anthropic from "@anthropic-ai/sdk";
 import { env } from "../../config/env";
 import { logger } from "../utils/logger";
 

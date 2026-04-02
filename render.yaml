@@ -9,7 +9,7 @@ services:
     buildCommand: >-
       cd ../.. &&
       npm install -g pnpm@9 &&
-      pnpm install --frozen-lockfile --filter @notcast/server... &&
+      pnpm install --no-frozen-lockfile --filter @notcast/server... &&
       pnpm --filter @notcast/server db:generate &&
       pnpm --filter @notcast/server build
     # startCommand, rootDir (apps/server) içinden çalışır
