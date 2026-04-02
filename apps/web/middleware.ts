@@ -16,9 +16,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Access token cookie veya header kontrolü
-  // Not: HttpOnly cookie olmadığı için JS'te erişilebilen cookie kullanıyoruz
+  // Frontend tarafında login sonrası set edilen session cookie'si kontrol edilir
   const hasSession =
-    request.cookies.has("refreshToken") ||
+    request.cookies.has("notcast-session") ||
     request.headers.get("authorization")?.startsWith("Bearer ");
 
   const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));

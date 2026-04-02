@@ -40,7 +40,7 @@ export function useAuth() {
   const handleRegister = async (email: string, password: string, name: string) => {
     try {
       await register(email, password, name);
-      toast.success("Kayıt başarılı! E-postanızı doğrulayın.");
+      toast.success("Kayıt başarılı! Giriş yapabilirsiniz.");
       router.push("/login");
     } catch (err) {
       toast.error(getErrorMessage(err));

@@ -134,7 +134,6 @@ export async function register(input: RegisterInput): Promise<SafeUser> {
   }
 
   const passwordHash = await bcrypt.hash(input.password, BCRYPT_SALT_ROUNDS);
-  const verifyToken = crypto.randomBytes(32).toString("hex");
 
   const user = await createUser({
     email: input.email,
@@ -142,12 +141,11 @@ export async function register(input: RegisterInput): Promise<SafeUser> {
     name: input.name,
   });
 
-  // E-posta doğrulama token'ını kaydet
-  await updateUser(user.id, { verifyToken });
+  // Email servisi henüz implemente edilmediğinden, kullanıcıyı doğrudan doğrulanmış olarak işaretle
+  // TODO: Email servisi eklendiğinde verifyToken oluştur ve email gönder
+  await updateUser(user.id, { emailVerified: true });
 
   logger.info({ userId: user.id, email: user.email }, "Yeni kullanıcı kayıt oldu");
-
-  // TODO: E-posta gönder (PART 3+ email service)
 
   return toSafeUser(user);
 }

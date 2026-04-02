@@ -45,7 +45,7 @@ export async function registerHandler(
       success: true,
       data: {
         user,
-        message: "Kayıt başarılı! E-postanızı doğrulayın.",
+        message: "Kayıt başarılı! Giriş yapabilirsiniz.",
       },
     });
   } catch (err) {
