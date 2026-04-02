@@ -6,13 +6,14 @@
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { User, UserRole } from "@prisma/client";
+import type { User as PrismaUser } from "@prisma/client";
 import { AppError } from "../../shared/utils/errors";
 import { HTTP_STATUS } from "@notcast/shared";
 
 // Express Request'e user tipini ekle
 declare global {
   namespace Express {
-    interface User extends import("@prisma/client").User {}
+    interface User extends PrismaUser {}
   }
 }
 

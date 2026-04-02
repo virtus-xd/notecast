@@ -3,15 +3,15 @@
  * El yazısı dahil tüm metin çıkarma için birincil OCR
  */
 
-import vision from "@google-cloud/vision";
+import { ImageAnnotatorClient } from "@google-cloud/vision";
 import { logger } from "../utils/logger";
 import { AppError } from "../utils/errors";
 
 // ──────── Client ────────
 
-let _client: vision.ImageAnnotatorClient | null = null;
+let _client: ImageAnnotatorClient | null = null;
 
-function getClient(): vision.ImageAnnotatorClient {
+function getClient(): ImageAnnotatorClient {
   if (_client) return _client;
 
   const credentialsPath = process.env["GOOGLE_APPLICATION_CREDENTIALS"];
@@ -23,7 +23,7 @@ function getClient(): vision.ImageAnnotatorClient {
     );
   }
 
-  _client = new vision.ImageAnnotatorClient({
+  _client = new ImageAnnotatorClient({
     keyFilename: credentialsPath,
     projectId,
   });

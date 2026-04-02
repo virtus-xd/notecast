@@ -67,7 +67,7 @@ function validateMagicBytes(buffer: Buffer, mimeType: string): boolean {
   if (mimeType === "image/webp") {
     const [riff, webp] = patterns;
     return (
-      matchPattern(buffer, riff.bytes, riff.offset ?? 0) &&
+      matchPattern(buffer, riff!.bytes, riff!.offset ?? 0) &&
       matchPattern(buffer, webp!.bytes, webp!.offset ?? 0)
     );
   }
