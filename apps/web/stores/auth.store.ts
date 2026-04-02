@@ -88,7 +88,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "notcast-auth",
       storage: createJSONStorage(() =>
-        typeof window !== "undefined" ? localStorage : ({ getItem: () => null, setItem: () => {}, removeItem: () => {} } as Storage)
+        typeof window !== "undefined" ? localStorage : ({ getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage)
       ),
       partialize: (state) => ({
         user: state.user,
