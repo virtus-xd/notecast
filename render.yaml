@@ -10,6 +10,7 @@ services:
       cd ../.. &&
       npm install -g pnpm@9 prisma@5 &&
       pnpm install --no-frozen-lockfile &&
+      pnpm --filter @notcast/shared build &&
       prisma generate --schema=apps/server/src/prisma/schema.prisma &&
       pnpm --filter @notcast/server build
     # startCommand, rootDir (apps/server) içinden çalışır

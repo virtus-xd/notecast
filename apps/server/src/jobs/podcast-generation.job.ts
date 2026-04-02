@@ -98,7 +98,7 @@ export function startPodcastGenerationWorker(): void {
         emitPodcastProgress(userId, podcastId, "GENERATING_AUDIO", PROGRESS.TTS_START, "Ses üretiliyor...");
 
         // Chunk bazlı ilerleme bildirimi
-        let lastEmittedProgress = PROGRESS.TTS_START;
+        let lastEmittedProgress: number = PROGRESS.TTS_START;
 
         const audioBuffer = await generateSpeech(
           scriptText,

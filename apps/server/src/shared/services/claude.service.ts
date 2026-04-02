@@ -126,7 +126,7 @@ export async function analyzeNoteText(
     );
 
     const rawContent = response.content[0];
-    if (rawContent.type !== "text") {
+    if (!rawContent || rawContent.type !== "text") {
       throw new Error("Beklenmeyen Claude yanıt tipi");
     }
 
@@ -188,7 +188,7 @@ export async function generatePodcastScript(
   );
 
   const rawContent = response.content[0];
-  if (rawContent.type !== "text") {
+  if (!rawContent || rawContent.type !== "text") {
     throw new Error("Beklenmeyen Claude yanıt tipi");
   }
 

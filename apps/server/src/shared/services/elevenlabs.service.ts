@@ -122,8 +122,8 @@ export function splitTextIntoChunks(text: string, maxLength = MAX_CHUNK_CHARS): 
 
     let splitAt: number;
     if (matches.length > 0) {
-      const lastMatch = matches[matches.length - 1];
-      splitAt = lastMatch.index! + lastMatch[0].length;
+      const lastMatch = matches[matches.length - 1]!;
+      splitAt = lastMatch.index! + lastMatch[0]!.length;
     } else {
       // Cümle sonu bulunamazsa son boşluktan böl
       const lastSpace = slice.lastIndexOf(" ");
@@ -166,7 +166,7 @@ export async function generateSpeech(
   const audioBuffers: Buffer[] = [];
 
   for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
+    const chunk = chunks[i]!;
     logger.debug({ chunk: i + 1, total: chunks.length, chars: chunk.length }, "Chunk işleniyor");
 
     const audioBuffer = await generateChunk(chunk, voiceId, options);
