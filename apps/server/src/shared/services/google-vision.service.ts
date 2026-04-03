@@ -14,19 +14,26 @@ let _client: ImageAnnotatorClient | null = null;
 function getClient(): ImageAnnotatorClient {
   if (_client) return _client;
 
-  const credentialsPath = process.env["GOOGLE_APPLICATION_CREDENTIALS"];
   const projectId = process.env["GOOGLE_CLOUD_PROJECT_ID"];
+  const credentialsJson = process.env["GOOGLE_CREDENTIALS_JSON"];
+  const credentialsPath = process.env["GOOGLE_APPLICATION_CREDENTIALS"];
 
-  if (!credentialsPath || !projectId) {
-    throw AppError.internal(
-      "Google Cloud Vision yapılandırması eksik (GOOGLE_APPLICATION_CREDENTIALS, GOOGLE_CLOUD_PROJECT_ID)"
-    );
+  if (!projectId) {
+    throw AppError.internal("Google Cloud Vision yapılandırması eksik (GOOGLE_CLOUD_PROJECT_ID)");
   }
 
-  _client = new ImageAnnotatorClient({
-    keyFilename: credentialsPath,
-    projectId,
-  });
+  if (credentialsJson) {
+    // Render/Vercel gibi platformlar için JSON içeriği env variable olarak
+    const credentials = JSON.parse(credentialsJson) as object;
+    _client = new ImageAnnotatorClient({ credentials, projectId });
+  } else if (credentialsPath) {
+    // Local geliştirme için dosya yolu
+    _client = new ImageAnnotatorClient({ keyFilename: credentialsPath, projectId });
+  } else {
+    throw AppError.internal(
+      "Google Cloud Vision yapılandırması eksik (GOOGLE_CREDENTIALS_JSON veya GOOGLE_APPLICATION_CREDENTIALS)"
+    );
+  }
 
   return _client;
 }
@@ -101,7 +108,7 @@ export async function extractTextFromImage(imageBuffer: Buffer): Promise<OcrResu
  */
 export function isGoogleVisionAvailable(): boolean {
   return !!(
-    process.env["GOOGLE_APPLICATION_CREDENTIALS"] &&
-    process.env["GOOGLE_CLOUD_PROJECT_ID"]
+    process.env["GOOGLE_CLOUD_PROJECT_ID"] &&
+    (process.env["GOOGLE_CREDENTIALS_JSON"] || process.env["GOOGLE_APPLICATION_CREDENTIALS"])
   );
 }
