@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeroSection } from "@/components/ui/hero-section";
+import { ShaderCard } from "@/components/ui/shader-card";
 
 // ──────── Nasıl Çalışır Adımları ────────
 
@@ -142,27 +143,15 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-16 grid gap-8 md:grid-cols-3 lg:mt-20">
-            {HOW_IT_WORKS.map(({ step, icon: Icon, title, description, color }) => (
-              <div
+            {HOW_IT_WORKS.map(({ step, icon: Icon, title, description }, index) => (
+              <ShaderCard
                 key={step}
-                className="group relative rounded-2xl border bg-card p-8 transition-all duration-300 hover:border-[#00c3ff]/30 hover:shadow-lg hover:shadow-[#00c3ff]/5"
-              >
-                {/* Step number */}
-                <div
-                  className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl"
-                  style={{ backgroundColor: `${color}15` }}
-                >
-                  <Icon className="h-6 w-6" style={{ color }} />
-                </div>
-                <span
-                  className="absolute right-8 top-8 text-4xl font-extrabold opacity-[0.08]"
-                  style={{ color }}
-                >
-                  {step}
-                </span>
-                <h3 className="mb-3 text-xl font-bold">{title}</h3>
-                <p className="leading-relaxed text-muted-foreground">{description}</p>
-              </div>
+                index={index}
+                icon={<Icon className="h-12 w-12 text-white" />}
+                title={title}
+                description={description}
+                stepLabel={step}
+              />
             ))}
           </div>
         </div>
@@ -183,18 +172,15 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, description }) => (
-              <div
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
+            {FEATURES.map(({ icon: Icon, title, description }, index) => (
+              <ShaderCard
                 key={title}
-                className="group rounded-2xl border bg-card p-7 transition-all duration-300 hover:border-[#00c3ff]/30 hover:shadow-lg hover:shadow-[#00c3ff]/5"
-              >
-                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#00c3ff]/10">
-                  <Icon className="h-5 w-5 text-[#00c3ff]" />
-                </div>
-                <h3 className="mb-2 text-base font-bold">{title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-              </div>
+                index={index + 3}
+                icon={<Icon className="h-12 w-12 text-white" />}
+                title={title}
+                description={description}
+              />
             ))}
           </div>
         </div>
