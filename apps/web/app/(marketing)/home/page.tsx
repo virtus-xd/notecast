@@ -7,7 +7,6 @@ import {
   Zap,
   Shield,
   ArrowRight,
-  Check,
   FileText,
   Mic,
   Sparkles,
@@ -15,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { HeroSection } from "@/components/ui/hero-section";
 import { ShaderCard } from "@/components/ui/shader-card";
+import { PricingSection } from "@/components/ui/pricing-card";
 
 // ──────── Nasıl Çalışır Adımları ────────
 
@@ -80,44 +80,6 @@ const FEATURES = [
   },
 ] as const;
 
-// ──────── Fiyatlandırma ────────
-
-const PLANS = [
-  {
-    name: "Ücretsiz",
-    price: "₺0",
-    period: "/ ay",
-    highlight: false,
-    features: [
-      "Sınırsız not yükleme",
-      "OCR & metin analizi",
-      "Ayda 3 podcast",
-      "2 ses seçeneği",
-      "Eğitici stil",
-    ],
-    cta: "Ücretsiz Başla",
-    href: "/register",
-  },
-  {
-    name: "Premium",
-    price: "₺99",
-    period: "/ ay",
-    highlight: true,
-    features: [
-      "Sınırsız not yükleme",
-      "OCR & metin analizi",
-      "Sınırsız podcast",
-      "Tüm ses seçenekleri",
-      "3 podcast stili",
-      "Hız kontrolü",
-      "20MB dosya boyutu",
-      "Öncelikli işlem",
-      "Podcast indirme",
-    ],
-    cta: "Premium'u Dene",
-    href: "/register",
-  },
-] as const;
 
 // ──────── Bileşen ────────
 
@@ -187,71 +149,7 @@ export default function LandingPage() {
       </section>
 
       {/* Fiyatlandırma */}
-      <section className="relative py-24 lg:py-32" id="pricing">
-        <div className="mx-auto max-w-[1200px] px-6">
-          <div className="mx-auto max-w-[580px] text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#00c3ff]">
-              Fiyatlandırma
-            </p>
-            <h2 className="text-3xl font-extrabold tracking-tight lg:text-4xl">
-              Basit ve şeffaf fiyatlar
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Başlamak için kredi kartı gerekmez
-            </p>
-          </div>
-
-          <div className="mx-auto mt-16 grid max-w-[800px] gap-8 sm:grid-cols-2 lg:mt-20">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={`relative overflow-hidden rounded-2xl border p-8 transition-all duration-300 ${
-                  plan.highlight
-                    ? "border-[#00c3ff]/40 bg-card shadow-xl shadow-[#00c3ff]/10"
-                    : "bg-card hover:border-[#00c3ff]/20 hover:shadow-lg hover:shadow-[#00c3ff]/5"
-                }`}
-              >
-                {plan.highlight && (
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#00c3ff] to-[#f3a6ff]" />
-                )}
-                {plan.highlight && (
-                  <span className="mb-4 inline-block rounded-full bg-[#00c3ff]/10 px-3 py-1 text-xs font-bold text-[#00c3ff]">
-                    Önerilen
-                  </span>
-                )}
-                <p className="text-lg font-bold">{plan.name}</p>
-                <div className="mt-2 flex items-end gap-1">
-                  <span className="text-4xl font-extrabold tracking-tight">{plan.price}</span>
-                  <span className="mb-1 text-muted-foreground">{plan.period}</span>
-                </div>
-
-                <ul className="mt-8 space-y-3">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-3 text-[15px]">
-                      <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#00c3ff]/10">
-                        <Check className="h-3 w-3 text-[#00c3ff]" />
-                      </div>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  asChild
-                  className={`mt-8 w-full rounded-full text-base font-semibold ${
-                    plan.highlight
-                      ? "bg-[#00c3ff] text-white shadow-lg shadow-[#00c3ff]/25 hover:bg-[#00b0e6]"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                  size="lg"
-                >
-                  <Link href={plan.href}>{plan.cta}</Link>
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* CTA — Dark section */}
       <section className="relative overflow-hidden bg-[#1a1a1a] py-24 dark:bg-muted/40 lg:py-32">
