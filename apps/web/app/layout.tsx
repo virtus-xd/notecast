@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { QueryProvider } from "@/components/shared/query-provider";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const geistSans = Inter({
+const geistSans = Plus_Jakarta_Sans({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const geistMono = JetBrains_Mono({

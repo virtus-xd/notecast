@@ -8,43 +8,75 @@ import {
   Shield,
   ArrowRight,
   Check,
+  FileText,
+  Mic,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { HeroSection } from "@/components/ui/hero-section";
 
 // ──────── Nasıl Çalışır Adımları ────────
 
 const HOW_IT_WORKS = [
   {
-    step: "1",
+    step: "01",
     icon: Upload,
     title: "Notunu Yükle",
-    description: "Fotoğraf çek, PDF yükle ya da metni yapıştır. El yazısı bile çalışır.",
+    description:
+      "Fotoğraf çek, PDF yükle ya da metni yapıştır. El yazısı bile çalışır — Google Cloud Vision ile anında tanınır.",
+    color: "#00c3ff",
   },
   {
-    step: "2",
-    icon: Cpu,
+    step: "02",
+    icon: Sparkles,
     title: "Yapay Zeka Analiz Eder",
-    description: "OCR + Claude API ile metin çıkarılır, başlıklara ayrılır, etiketlenir.",
+    description:
+      "OCR ile metin çıkarılır, Claude API ile başlıklara ayrılır, etiketlenir ve podcast script'i oluşturulur.",
+    color: "#f3a6ff",
   },
   {
-    step: "3",
+    step: "03",
     icon: Headphones,
     title: "Podcast'ini Dinle",
-    description: "Gerçekçi Türkçe sesle otomatik podcast oluşturulur, istediğin zaman dinle.",
+    description:
+      "ElevenLabs ile gerçekçi Türkçe sesle otomatik podcast oluşturulur. İstediğin zaman, istediğin yerde dinle.",
+    color: "#35c838",
   },
 ] as const;
 
 // ──────── Özellikler ────────
 
 const FEATURES = [
-  { icon: BookOpen, title: "El Yazısı Desteği", description: "Google Cloud Vision ile karmaşık el yazılarını bile okur." },
-  { icon: Cpu, title: "Akıllı Düzenleme", description: "Claude API OCR hatalarını düzeltir, metni bölümlere ayırır." },
-  { icon: Headphones, title: "Gerçekçi Türkçe Ses", description: "ElevenLabs Multilingual v2 ile doğal tonlama." },
-  { icon: Zap, title: "Hızlı İşlem", description: "Ortalama 1–2 dakikada podcast hazır." },
-  { icon: Shield, title: "Güvenli Depolama", description: "Tüm dosyalar şifrelenmiş S3 üzerinde saklanır." },
-  { icon: Upload, title: "Birden Fazla Format", description: "JPG, PNG, PDF, TXT ve DOCX desteği." },
+  {
+    icon: BookOpen,
+    title: "El Yazısı Desteği",
+    description: "Google Cloud Vision ile karmaşık el yazılarını bile yüksek doğrulukla okur.",
+  },
+  {
+    icon: Cpu,
+    title: "Akıllı Düzenleme",
+    description: "Claude API, OCR hatalarını düzeltir ve metni anlamlı bölümlere ayırır.",
+  },
+  {
+    icon: Mic,
+    title: "Gerçekçi Türkçe Ses",
+    description: "ElevenLabs Multilingual v2 ile doğal tonlama ve akıcı Türkçe seslendirme.",
+  },
+  {
+    icon: Zap,
+    title: "Hızlı İşlem",
+    description: "Ortalama 1–2 dakikada notundan hazır bir podcast oluşturulur.",
+  },
+  {
+    icon: Shield,
+    title: "Güvenli Depolama",
+    description: "Tüm dosyalar şifrelenmiş S3 üzerinde güvenle saklanır.",
+  },
+  {
+    icon: FileText,
+    title: "Birden Fazla Format",
+    description: "JPG, PNG, PDF, TXT ve DOCX dosya formatlarını destekler.",
+  },
 ] as const;
 
 // ──────── Fiyatlandırma ────────
@@ -95,35 +127,41 @@ export default function LandingPage() {
       <HeroSection />
 
       {/* Nasıl Çalışır */}
-      <section className="bg-muted/40 py-20" id="how-it-works">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Nasıl çalışır?</h2>
-            <p className="text-muted-foreground mt-2">3 adımda notundan podcast'e</p>
+      <section className="relative py-24 lg:py-32" id="how-it-works">
+        <div className="mx-auto max-w-[1200px] px-6">
+          <div className="mx-auto max-w-[580px] text-center">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#00c3ff]">
+              Nasıl Çalışır
+            </p>
+            <h2 className="text-3xl font-extrabold tracking-tight lg:text-4xl">
+              3 adımda notundan podcast&apos;e
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Karmaşık süreçler yok. Yükle, bekle, dinle.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {HOW_IT_WORKS.map(({ step, icon: Icon, title, description }) => (
-              <div key={step} className="relative">
-                {/* Bağlantı çizgisi */}
-                {step !== "3" && (
-                  <div className="hidden md:block absolute top-8 left-[calc(100%-1rem)] w-8 border-t-2 border-dashed border-primary/30 z-10" />
-                )}
-                <Card className="text-center h-full">
-                  <CardContent className="p-6 space-y-4">
-                    <div className="relative inline-flex">
-                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-                        <Icon className="h-7 w-7 text-primary" />
-                      </div>
-                      <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
-                        {step}
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-base">{title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
+
+          <div className="mt-16 grid gap-8 md:grid-cols-3 lg:mt-20">
+            {HOW_IT_WORKS.map(({ step, icon: Icon, title, description, color }) => (
+              <div
+                key={step}
+                className="group relative rounded-2xl border bg-card p-8 transition-all duration-300 hover:border-[#00c3ff]/30 hover:shadow-lg hover:shadow-[#00c3ff]/5"
+              >
+                {/* Step number */}
+                <div
+                  className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: `${color}15` }}
+                >
+                  <Icon className="h-6 w-6" style={{ color }} />
+                </div>
+                <span
+                  className="absolute right-8 top-8 text-4xl font-extrabold opacity-[0.08]"
+                  style={{ color }}
+                >
+                  {step}
+                </span>
+                <h3 className="mb-3 text-xl font-bold">{title}</h3>
+                <p className="leading-relaxed text-muted-foreground">{description}</p>
               </div>
             ))}
           </div>
@@ -131,22 +169,31 @@ export default function LandingPage() {
       </section>
 
       {/* Özellikler */}
-      <section className="py-20" id="features">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Her şey düşünülmüş</h2>
-            <p className="text-muted-foreground mt-2">Öğrenciler için tasarlandı</p>
+      <section className="relative bg-muted/40 py-24 lg:py-32" id="features">
+        <div className="mx-auto max-w-[1200px] px-6">
+          <div className="mx-auto max-w-[580px] text-center">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#00c3ff]">
+              Özellikler
+            </p>
+            <h2 className="text-3xl font-extrabold tracking-tight lg:text-4xl">
+              Her şey düşünülmüş
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Öğrenciler için baştan sona tasarlandı
+            </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
             {FEATURES.map(({ icon: Icon, title, description }) => (
-              <div key={title} className="flex gap-4 p-4 rounded-xl border bg-card hover:border-primary/40 transition-colors">
-                <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Icon className="h-4.5 w-4.5 text-primary" />
+              <div
+                key={title}
+                className="group rounded-2xl border bg-card p-7 transition-all duration-300 hover:border-[#00c3ff]/30 hover:shadow-lg hover:shadow-[#00c3ff]/5"
+              >
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#00c3ff]/10">
+                  <Icon className="h-5 w-5 text-[#00c3ff]" />
                 </div>
-                <div>
-                  <h3 className="font-medium text-sm">{title}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
-                </div>
+                <h3 className="mb-2 text-base font-bold">{title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
               </div>
             ))}
           </div>
@@ -154,81 +201,130 @@ export default function LandingPage() {
       </section>
 
       {/* Fiyatlandırma */}
-      <section className="bg-muted/40 py-20" id="pricing">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Fiyatlandırma</h2>
-            <p className="text-muted-foreground mt-2">Başlamak için kredi kartı gerekmez</p>
+      <section className="relative py-24 lg:py-32" id="pricing">
+        <div className="mx-auto max-w-[1200px] px-6">
+          <div className="mx-auto max-w-[580px] text-center">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#00c3ff]">
+              Fiyatlandırma
+            </p>
+            <h2 className="text-3xl font-extrabold tracking-tight lg:text-4xl">
+              Basit ve şeffaf fiyatlar
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Başlamak için kredi kartı gerekmez
+            </p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+
+          <div className="mx-auto mt-16 grid max-w-[800px] gap-8 sm:grid-cols-2 lg:mt-20">
             {PLANS.map((plan) => (
-              <Card
+              <div
                 key={plan.name}
-                className={plan.highlight ? "border-primary shadow-lg ring-1 ring-primary/20" : ""}
+                className={`relative overflow-hidden rounded-2xl border p-8 transition-all duration-300 ${
+                  plan.highlight
+                    ? "border-[#00c3ff]/40 bg-card shadow-xl shadow-[#00c3ff]/10"
+                    : "bg-card hover:border-[#00c3ff]/20 hover:shadow-lg hover:shadow-[#00c3ff]/5"
+                }`}
               >
                 {plan.highlight && (
-                  <div className="bg-primary text-primary-foreground text-xs font-semibold text-center py-1.5 rounded-t-lg">
-                    Önerilen
-                  </div>
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#00c3ff] to-[#f3a6ff]" />
                 )}
-                <CardContent className="p-6 space-y-5">
-                  <div>
-                    <p className="font-bold text-lg">{plan.name}</p>
-                    <div className="flex items-end gap-1 mt-1">
-                      <span className="text-3xl font-extrabold">{plan.price}</span>
-                      <span className="text-muted-foreground text-sm mb-0.5">{plan.period}</span>
-                    </div>
-                  </div>
-                  <ul className="space-y-2">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    asChild
-                    className="w-full"
-                    variant={plan.highlight ? "default" : "outline"}
-                  >
-                    <Link href={plan.href}>{plan.cta}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                {plan.highlight && (
+                  <span className="mb-4 inline-block rounded-full bg-[#00c3ff]/10 px-3 py-1 text-xs font-bold text-[#00c3ff]">
+                    Önerilen
+                  </span>
+                )}
+                <p className="text-lg font-bold">{plan.name}</p>
+                <div className="mt-2 flex items-end gap-1">
+                  <span className="text-4xl font-extrabold tracking-tight">{plan.price}</span>
+                  <span className="mb-1 text-muted-foreground">{plan.period}</span>
+                </div>
+
+                <ul className="mt-8 space-y-3">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-3 text-[15px]">
+                      <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#00c3ff]/10">
+                        <Check className="h-3 w-3 text-[#00c3ff]" />
+                      </div>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  className={`mt-8 w-full rounded-full text-base font-semibold ${
+                    plan.highlight
+                      ? "bg-[#00c3ff] text-white shadow-lg shadow-[#00c3ff]/25 hover:bg-[#00b0e6]"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                  size="lg"
+                >
+                  <Link href={plan.href}>{plan.cta}</Link>
+                </Button>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 max-w-3xl text-center space-y-5">
-          <h2 className="text-3xl font-bold">Öğrenmeye bugün başla</h2>
-          <p className="text-muted-foreground">
-            Binlerce öğrenci NotCast ile çalışma saatlerini azalttı, anlama oranlarını artırdı.
+      {/* CTA — Dark section */}
+      <section className="relative overflow-hidden bg-[#1a1a1a] py-24 dark:bg-muted/40 lg:py-32">
+        {/* Decorative glow */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-1/2 mx-auto h-[400px] w-[600px] -translate-y-1/2 rounded-full bg-[#00c3ff]/[0.08] blur-[120px]"
+        />
+
+        <div className="relative mx-auto max-w-[700px] px-6 text-center">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white dark:text-foreground lg:text-4xl">
+            Öğrenmeye bugün başla
+          </h2>
+          <p className="mt-5 text-lg leading-relaxed text-gray-400 dark:text-muted-foreground">
+            Binlerce öğrenci NotCast ile çalışma saatlerini azalttı, anlama oranlarını artırdı. Sen de katıl.
           </p>
-          <Button size="lg" asChild>
+          <Button
+            asChild
+            size="lg"
+            className="mt-10 h-12 rounded-full bg-[#00c3ff] px-8 text-base font-semibold text-white shadow-lg shadow-[#00c3ff]/25 hover:bg-[#00b0e6] hover:shadow-xl hover:shadow-[#00c3ff]/30"
+          >
             <Link href="/register">
-              Ücretsiz Hesap Oluştur <ArrowRight className="h-4 w-4" />
+              Ücretsiz Hesap Oluştur
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4 max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-primary rounded flex items-center justify-center">
-              <span className="text-white text-[10px] font-black">N</span>
+      <footer className="border-t py-10">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-6 px-6 sm:flex-row">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00c3ff]">
+              <Headphones className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
             </div>
-            <span>NotCast © 2026</span>
+            <span className="text-sm font-semibold text-muted-foreground">
+              NotCast &copy; 2026
+            </span>
           </div>
-          <div className="flex gap-4">
-            <Link href="/login" className="hover:text-foreground transition-colors">Giriş</Link>
-            <Link href="/register" className="hover:text-foreground transition-colors">Kayıt</Link>
-            <Link href="#pricing" className="hover:text-foreground transition-colors">Fiyatlar</Link>
+          <div className="flex gap-6 text-sm">
+            <Link
+              href="/login"
+              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Giriş
+            </Link>
+            <Link
+              href="/register"
+              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Kayıt
+            </Link>
+            <a
+              href="#pricing"
+              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Fiyatlar
+            </a>
           </div>
         </div>
       </footer>
