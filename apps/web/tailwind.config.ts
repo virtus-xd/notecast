@@ -82,11 +82,35 @@ const config: Config = {
           "0%, 100%": { transform: "scaleY(1)" },
           "50%": { transform: "scaleY(1.5)" },
         },
+        "fade-slide-in": {
+          to: {
+            opacity: "1",
+            filter: "blur(0px)",
+            transform: "translateY(0px)",
+          },
+        },
+        "slide-right-in": {
+          to: {
+            opacity: "1",
+            filter: "blur(0px)",
+            transform: "translateX(0px)",
+          },
+        },
+        "testimonial-in": {
+          to: {
+            opacity: "1",
+            filter: "blur(0px)",
+            transform: "translateY(0px) scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-wave": "pulse-wave 1s ease-in-out infinite",
+        "fade-slide-in": "fade-slide-in 0.7s cubic-bezier(0.16,1,0.3,1) forwards",
+        "slide-right-in": "slide-right-in 0.9s cubic-bezier(0.16,1,0.3,1) forwards",
+        "testimonial-in": "testimonial-in 0.8s cubic-bezier(0.16,1,0.3,1) forwards",
       },
     },
   },
