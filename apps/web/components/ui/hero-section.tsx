@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Menu, X, Headphones, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
@@ -117,29 +118,23 @@ export const HeroSection = () => {
     <>
       <HeroHeader />
 
-      <section className="relative overflow-hidden pb-20 pt-16 lg:pb-32 lg:pt-24">
-        {/* Subtle glow behind hero */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-40 mx-auto h-[600px] w-[900px] rounded-full bg-[#00c3ff]/[0.07] blur-[120px] dark:bg-[#00c3ff]/[0.04]"
-        />
-
-        <div className="relative mx-auto max-w-[1200px] px-6">
+      <AuroraBackground className="min-h-[auto] pb-20 pt-16 lg:pb-32 lg:pt-24">
+        <div className="relative z-10 mx-auto max-w-[1200px] px-6">
           <div className="mx-auto max-w-[780px] text-center">
             {/* Badge */}
-            <div className="animate-element mb-8 inline-flex items-center gap-2 rounded-full border border-[#00c3ff]/20 bg-[#00c3ff]/[0.08] px-4 py-1.5 text-sm font-semibold text-[#00c3ff]">
+            <div className="animate-element mb-8 inline-flex items-center gap-2 rounded-full border border-[#00c3ff]/20 bg-[#00c3ff]/[0.08] px-4 py-1.5 text-sm font-semibold text-[#00c3ff] backdrop-blur-sm">
               <Headphones className="h-3.5 w-3.5" />
               Yapay Zeka Podcast Oluşturucu
             </div>
 
             {/* Headline */}
-            <h1 className="animate-element animate-delay-100 text-[clamp(2.25rem,5vw,4rem)] font-extrabold leading-[1.1] tracking-tight text-foreground">
+            <h1 className="animate-element animate-delay-100 text-[clamp(2.25rem,5vw,4rem)] font-extrabold leading-[1.1] tracking-tight dark:text-white">
               Ders notlarını{" "}
               <span className="text-[#00c3ff]">podcast&apos;e</span> dönüştür
             </h1>
 
             {/* Description */}
-            <p className="animate-element animate-delay-200 mx-auto mt-6 max-w-[580px] text-lg leading-relaxed text-muted-foreground">
+            <p className="animate-element animate-delay-200 mx-auto mt-6 max-w-[580px] text-lg leading-relaxed text-slate-600 dark:text-neutral-300">
               Fotoğraf çek, PDF yükle ya da metni yapıştır — yapay zeka saniyeler içinde analiz eder ve gerçekçi Türkçe sesle dinleyebileceğin bir podcast oluşturur.
             </p>
 
@@ -159,20 +154,20 @@ export const HeroSection = () => {
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-12 rounded-full px-8 text-base font-semibold"
+                className="h-12 rounded-full border-slate-300 px-8 text-base font-semibold dark:border-zinc-700"
               >
                 <Link href="/login">Giriş Yap</Link>
               </Button>
             </div>
 
-            <p className="animate-element animate-delay-400 mt-5 text-sm text-muted-foreground">
+            <p className="animate-element animate-delay-400 mt-5 text-sm text-slate-500 dark:text-neutral-400">
               Kredi kartı gerekmez · Ayda 3 podcast ücretsiz
             </p>
           </div>
 
           {/* Product screenshot */}
           <div className="animate-element animate-delay-500 relative mx-auto mt-16 max-w-[960px] lg:mt-20">
-            <div className="overflow-hidden rounded-2xl border bg-muted/30 shadow-2xl shadow-black/10 dark:shadow-black/30">
+            <div className="overflow-hidden rounded-2xl border border-white/20 shadow-2xl shadow-black/10 dark:border-zinc-700/50 dark:shadow-black/30">
               <img
                 src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1920&q=80&auto=format&fit=crop"
                 alt="NotCast uygulama önizlemesi"
@@ -181,14 +176,9 @@ export const HeroSection = () => {
                 height={1080}
               />
             </div>
-            {/* Decorative glow under image */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -bottom-8 inset-x-8 h-32 rounded-full bg-[#00c3ff]/10 blur-[60px] dark:bg-[#00c3ff]/5"
-            />
           </div>
         </div>
-      </section>
+      </AuroraBackground>
     </>
   );
 };

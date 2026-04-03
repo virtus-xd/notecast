@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const flattenColorPalette = require("tailwindcss/lib/util/flattenColorPalette").default;
 
 const config: Config = {
   darkMode: ["class"],
@@ -70,6 +72,10 @@ const config: Config = {
         mono: ["var(--font-geist-mono)", "monospace"],
       },
       keyframes: {
+        aurora: {
+          from: { backgroundPosition: "50% 50%, 50% 50%" },
+          to: { backgroundPosition: "350% 50%, 350% 50%" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -111,10 +117,24 @@ const config: Config = {
         "fade-slide-in": "fade-slide-in 0.7s cubic-bezier(0.16,1,0.3,1) forwards",
         "slide-right-in": "slide-right-in 0.9s cubic-bezier(0.16,1,0.3,1) forwards",
         "testimonial-in": "testimonial-in 0.8s cubic-bezier(0.16,1,0.3,1) forwards",
+        aurora: "aurora 60s linear infinite",
       },
     },
   },
-  plugins: [animate],
+  plugins: [
+    animate,
+    addVariablesForColors,
+  ],
 };
+
+// Adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
+// Required by the aurora-background component.
+function addVariablesForColors({ addBase, theme }: { addBase: Function; theme: Function }) {
+  const allColors = flattenColorPalette(theme("colors")) as Record<string, string>;
+  const newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+  addBase({ ":root": newVars });
+}
 
 export default config;
