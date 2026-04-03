@@ -72,7 +72,8 @@ export default function PodcastsPage() {
       return data.data;
     },
     refetchInterval: (query) => {
-      const podcasts = query.state.data ?? [];
+      const podcasts = query.state.data;
+      if (!Array.isArray(podcasts)) return false;
       const hasProcessing = podcasts.some((p) =>
         ["PENDING", "SCRIPT_WRITING", "GENERATING_AUDIO", "MERGING"].includes(p.status)
       );
