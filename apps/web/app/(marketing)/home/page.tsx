@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { HeroSection } from "@/components/ui/hero-section";
 
 // ──────── Nasıl Çalışır Adımları ────────
 
@@ -91,56 +91,11 @@ const PLANS = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 max-w-6xl h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
-              <span className="text-white text-xs font-black">N</span>
-            </div>
-            <span className="font-bold text-primary">NotCast</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button variant="ghost" asChild size="sm">
-              <Link href="/login">Giriş Yap</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/register">Ücretsiz Başla</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section className="container mx-auto px-4 max-w-5xl pt-24 pb-16 text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-          <Zap className="h-3.5 w-3.5" /> Yapay Zeka Destekli Öğrenme Aracı
-        </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-          Ders notlarını{" "}
-          <span className="text-primary">podcast'e</span>{" "}
-          dönüştür
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Fotoğraf çek, PDF yükle ya da metni yapıştır — yapay zeka saniyeler içinde analiz eder ve
-          gerçekçi Türkçe sesle dinleyebileceğin bir podcast oluşturur.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Button size="lg" asChild>
-            <Link href="/register">
-              Ücretsiz Başla <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild>
-            <Link href="/login">Giriş Yap</Link>
-          </Button>
-        </div>
-        <p className="text-xs text-muted-foreground">Kredi kartı gerekmez · Ayda 3 podcast ücretsiz</p>
-      </section>
+      {/* Hero with integrated nav */}
+      <HeroSection />
 
       {/* Nasıl Çalışır */}
-      <section className="bg-muted/40 py-20">
+      <section className="bg-muted/40 py-20" id="how-it-works">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Nasıl çalışır?</h2>
@@ -176,7 +131,7 @@ export default function LandingPage() {
       </section>
 
       {/* Özellikler */}
-      <section className="py-20">
+      <section className="py-20" id="features">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Her şey düşünülmüş</h2>
