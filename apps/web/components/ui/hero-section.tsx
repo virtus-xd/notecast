@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Menu, X, Headphones, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 const menuItems = [
   { name: "Özellikler", href: "#features" },
@@ -140,16 +141,12 @@ export const HeroSection = () => {
 
             {/* CTA */}
             <div className="animate-element animate-delay-300 mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="h-12 rounded-full bg-[#00c3ff] px-8 text-base font-semibold text-white shadow-lg shadow-[#00c3ff]/25 hover:bg-[#00b0e6] hover:shadow-xl hover:shadow-[#00c3ff]/30"
-              >
-                <Link href="/register">
+              <Link href="/register">
+                <ShinyButton>
                   Ücretsiz Başla
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+                  <ArrowRight className="ml-2 inline h-4 w-4" />
+                </ShinyButton>
+              </Link>
               <Button
                 asChild
                 size="lg"

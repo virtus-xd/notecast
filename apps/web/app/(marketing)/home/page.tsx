@@ -11,10 +11,10 @@ import {
   Mic,
   Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { HeroSection } from "@/components/ui/hero-section";
 import { ShaderCard } from "@/components/ui/shader-card";
 import { PricingSection } from "@/components/ui/pricing-card";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 // ──────── Nasıl Çalışır Adımları ────────
 
@@ -166,16 +166,12 @@ export default function LandingPage() {
           <p className="mt-5 text-lg leading-relaxed text-gray-400 dark:text-muted-foreground">
             Binlerce öğrenci NotCast ile çalışma saatlerini azalttı, anlama oranlarını artırdı. Sen de katıl.
           </p>
-          <Button
-            asChild
-            size="lg"
-            className="mt-10 h-12 rounded-full bg-[#00c3ff] px-8 text-base font-semibold text-white shadow-lg shadow-[#00c3ff]/25 hover:bg-[#00b0e6] hover:shadow-xl hover:shadow-[#00c3ff]/30"
-          >
-            <Link href="/register">
+          <Link href="/register" className="mt-10 inline-block">
+            <ShinyButton>
               Ücretsiz Hesap Oluştur
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+              <ArrowRight className="ml-2 inline h-4 w-4" />
+            </ShinyButton>
+          </Link>
         </div>
       </section>
 
