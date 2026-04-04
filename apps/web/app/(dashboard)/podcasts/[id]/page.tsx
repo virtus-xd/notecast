@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import apiClient from "@/lib/api";
+import { useAuthStore } from "@/stores/auth.store";
 
 const AudioPlayer = dynamic(
   () => import("@/components/podcasts/audio-player").then((m) => m.AudioPlayer),
@@ -51,6 +52,8 @@ const STYLE_LABEL: Record<string, string> = {
 export default function PodcastDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const { data: podcast, isLoading, refetch } = useQuery({
     queryKey: ["podcast", id],
@@ -60,6 +63,7 @@ export default function PodcastDetailPage() {
       );
       return data.data;
     },
+    enabled: hasHydrated && isAuthenticated && !!id,
     refetchInterval: (query) => {
       const s = query.state.data?.status;
       if (!s) return false;

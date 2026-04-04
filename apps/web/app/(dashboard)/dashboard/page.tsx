@@ -81,26 +81,32 @@ function StatCard({
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const { data: notes, isLoading: notesLoading } = useQuery({
-    queryKey: ["notes"],
+  const { data: notesResponse, isLoading: notesLoading } = useQuery({
+    queryKey: ["dashboard-notes"],
     queryFn: async () => {
       const { data } = await apiClient.get<ApiSuccessResponse<Note[]>>("/notes?limit=5");
       return data;
     },
+    enabled: hasHydrated && isAuthenticated,
   });
 
-  const { data: podcasts, isLoading: podcastsLoading } = useQuery({
-    queryKey: ["podcasts"],
+  const { data: podcastsResponse, isLoading: podcastsLoading } = useQuery({
+    queryKey: ["dashboard-podcasts"],
     queryFn: async () => {
       const { data } = await apiClient.get<ApiSuccessResponse<PodcastWithNote[]>>("/podcasts?limit=5");
       return data;
     },
+    enabled: hasHydrated && isAuthenticated,
   });
 
-  const totalNotes = notes?.meta?.total ?? notes?.data?.length ?? 0;
-  const totalPodcasts = podcasts?.meta?.total ?? podcasts?.data?.length ?? 0;
-  const readyNotes = notes?.data?.filter((n) => n.status === "READY").length ?? 0;
+  const notes = notesResponse?.data;
+  const podcasts = podcastsResponse?.data;
+  const totalNotes = notesResponse?.meta?.total ?? notes?.length ?? 0;
+  const totalPodcasts = podcastsResponse?.meta?.total ?? podcasts?.length ?? 0;
+  const readyNotes = Array.isArray(notes) ? notes.filter((n) => n.status === "READY").length : 0;
   const remainingCredits = user
     ? Math.max(0, user.monthlyCredits - user.creditsUsed)
     : 0;
@@ -182,14 +188,14 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 ))
-              : notes?.data?.length === 0
+              : !notes?.length
               ? (
                 <div className="py-8 text-center text-sm text-muted-foreground">
                   <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-40" />
                   Henüz not yok
                 </div>
               )
-              : notes?.data?.slice(0, 5).map((note) => (
+              : notes.slice(0, 5).map((note) => (
                 <Link
                   key={note.id}
                   href={`/notes/${note.id}`}
@@ -237,14 +243,14 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 ))
-              : podcasts?.data?.length === 0
+              : !podcasts?.length
               ? (
                 <div className="py-8 text-center text-sm text-muted-foreground">
                   <Headphones className="h-8 w-8 mx-auto mb-2 opacity-40" />
                   Henüz podcast yok
                 </div>
               )
-              : podcasts?.data?.slice(0, 5).map((podcast) => (
+              : podcasts.slice(0, 5).map((podcast) => (
                 <Link
                   key={podcast.id}
                   href={`/podcasts/${podcast.id}`}

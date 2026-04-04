@@ -30,7 +30,6 @@ export function useAuth() {
       await login(email, password);
       toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
       router.push("/dashboard");
-      router.refresh();
     } catch (err) {
       toast.error(getErrorMessage(err));
       throw err;
@@ -49,7 +48,6 @@ export function useAuth() {
       await login(email, password);
       toast.success("Hesabınız oluşturuldu! Hoş geldiniz.");
       router.push("/dashboard");
-      router.refresh();
     } catch {
       // Login otomatik başarısız olursa login sayfasına yönlendir
       toast.success("Kayıt başarılı! Giriş yapınız.");
@@ -61,7 +59,6 @@ export function useAuth() {
     await logout();
     toast.info("Çıkış yapıldı");
     router.push("/");
-    router.refresh();
   };
 
   return {

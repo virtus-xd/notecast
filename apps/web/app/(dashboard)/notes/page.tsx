@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import apiClient from "@/lib/api";
 import { formatDate, timeAgo } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth.store";
 import type { Note, ApiSuccessResponse } from "@notcast/shared";
 
 const STATUS_ICONS: Record<string, React.ReactNode> = {
@@ -37,12 +38,17 @@ const UPLOAD_TYPE_ICONS: Record<string, string> = {
 };
 
 export default function NotesPage() {
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["notes"],
     queryFn: async () => {
       const { data } = await apiClient.get<ApiSuccessResponse<Note[]>>("/notes");
-      return data.data;
+      const notes = data.data;
+      return Array.isArray(notes) ? notes : [];
     },
+    enabled: hasHydrated && isAuthenticated,
   });
 
   return (
@@ -51,7 +57,7 @@ export default function NotesPage() {
         <div>
           <h1 className="text-2xl font-bold">Notlarım</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            {data ? `${data.length} not` : "Yükleniyor..."}
+            {Array.isArray(data) ? `${data.length} not` : "Yükleniyor..."}
           </p>
         </div>
         <Button asChild>
