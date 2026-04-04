@@ -161,19 +161,6 @@ export const HeroSection = () => {
               Kredi kartı gerekmez · Ayda 3 podcast ücretsiz
             </p>
           </div>
-
-          {/* Product screenshot */}
-          <div className="animate-element animate-delay-500 relative mx-auto mt-16 max-w-[960px] lg:mt-20">
-            <div className="overflow-hidden rounded-2xl border border-white/20 shadow-2xl shadow-black/10 dark:border-zinc-700/50 dark:shadow-black/30">
-              <img
-                src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1920&q=80&auto=format&fit=crop"
-                alt="NotCast uygulama önizlemesi"
-                className="w-full"
-                width={1920}
-                height={1080}
-              />
-            </div>
-          </div>
         </div>
       </AuroraBackground>
     </>
