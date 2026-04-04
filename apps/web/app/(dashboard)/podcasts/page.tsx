@@ -63,8 +63,6 @@ export default function PodcastsPage() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "READY" | "processing" | "ERROR">("all");
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
-
   const { setTrack, track: currentTrack, isPlaying, play, pause } = usePlayerStore();
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -76,7 +74,7 @@ export default function PodcastsPage() {
       const podcasts = data.data;
       return Array.isArray(podcasts) ? podcasts : [];
     },
-    enabled: hasHydrated && isAuthenticated,
+    enabled: isAuthenticated,
     refetchInterval: (query) => {
       const podcasts = query.state.data;
       if (!Array.isArray(podcasts)) return false;

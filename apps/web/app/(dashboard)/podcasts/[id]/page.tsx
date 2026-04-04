@@ -52,7 +52,6 @@ const STYLE_LABEL: Record<string, string> = {
 export default function PodcastDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const { data: podcast, isLoading, refetch } = useQuery({
@@ -63,7 +62,7 @@ export default function PodcastDetailPage() {
       );
       return data.data;
     },
-    enabled: hasHydrated && isAuthenticated && !!id,
+    enabled: isAuthenticated && !!id,
     refetchInterval: (query) => {
       const s = query.state.data?.status;
       if (!s) return false;

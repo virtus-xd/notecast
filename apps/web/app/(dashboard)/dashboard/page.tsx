@@ -81,7 +81,6 @@ function StatCard({
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const { data: notesResponse, isLoading: notesLoading } = useQuery({
@@ -90,7 +89,7 @@ export default function DashboardPage() {
       const { data } = await apiClient.get<ApiSuccessResponse<Note[]>>("/notes?limit=5");
       return data;
     },
-    enabled: hasHydrated && isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   const { data: podcastsResponse, isLoading: podcastsLoading } = useQuery({
@@ -99,7 +98,7 @@ export default function DashboardPage() {
       const { data } = await apiClient.get<ApiSuccessResponse<PodcastWithNote[]>>("/podcasts?limit=5");
       return data;
     },
-    enabled: hasHydrated && isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   const notes = notesResponse?.data;

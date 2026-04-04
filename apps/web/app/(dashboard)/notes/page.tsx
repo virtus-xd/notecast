@@ -38,7 +38,6 @@ const UPLOAD_TYPE_ICONS: Record<string, string> = {
 };
 
 export default function NotesPage() {
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const { data, isLoading, error } = useQuery({
@@ -48,7 +47,7 @@ export default function NotesPage() {
       const notes = data.data;
       return Array.isArray(notes) ? notes : [];
     },
-    enabled: hasHydrated && isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   return (

@@ -49,7 +49,6 @@ function StatusBadge({ status }: { status: Note["status"] }) {
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const { data: note, isLoading, refetch } = useQuery({
@@ -60,7 +59,7 @@ export default function NoteDetailPage() {
       );
       return data.data;
     },
-    enabled: hasHydrated && isAuthenticated && !!id,
+    enabled: isAuthenticated && !!id,
     // Fallback: WebSocket yoksa 5sn'de bir polling
     refetchInterval: (query) => {
       const s = query.state.data?.status;
