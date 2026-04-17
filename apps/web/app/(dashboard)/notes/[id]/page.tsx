@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import {
@@ -17,6 +18,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import apiClient from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
@@ -49,7 +60,9 @@ function StatusBadge({ status }: { status: Note["status"] }) {
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: note, isLoading, refetch } = useQuery({
     queryKey: ["note", id],
@@ -73,16 +86,19 @@ export default function NoteDetailPage() {
   // WebSocket ile gerçek zamanlı durum takibi
   const socketStatus = useNoteStatus(id ?? null);
 
-  const handleDelete = async () => {
-    if (!confirm("Bu notu silmek istediğinize emin misiniz? İlişkili podcast'ler de silinecektir.")) return;
-    try {
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
       await apiClient.delete(`/notes/${id}`);
-      toast.success("Not silindi");
+    },
+    onSuccess: () => {
+      toast.success("Not başarıyla silindi");
+      void queryClient.invalidateQueries({ queryKey: ["notes"] });
       router.push("/notes");
-    } catch {
+    },
+    onError: () => {
       toast.error("Not silinemedi");
-    }
-  };
+    },
+  });
 
   const handleReprocess = async () => {
     try {
@@ -136,7 +152,12 @@ export default function NoteDetailPage() {
               <RefreshCw className="h-4 w-4" /> Tekrar Dene
             </Button>
           )}
-          <Button variant="ghost" size="icon" onClick={handleDelete} className="text-destructive hover:text-destructive">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowDeleteDialog(true)}
+            className="text-destructive hover:text-destructive"
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -249,6 +270,35 @@ export default function NoteDetailPage() {
           ? `${formatDate(note.processingCompletedAt, { hour: "2-digit", minute: "2-digit" })} tarihinde işlendi`
           : "Henüz işlenmedi"}
       </div>
+
+      {/* Silme Onay Dialogu */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Notu Sil</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>"{note.title}"</strong> notunu silmek istediğinize emin misiniz?
+              Bu nota ait tüm podcast'ler de kalıcı olarak silinecektir.
+              Bu işlem geri alınamaz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              İptal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Siliniyor...</>
+              ) : (
+                "Evet, Sil"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

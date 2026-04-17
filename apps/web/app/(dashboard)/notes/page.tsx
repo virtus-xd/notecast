@@ -1,13 +1,25 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Plus, BookOpen, Clock, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Plus, BookOpen, Clock, CheckCircle, AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import apiClient from "@/lib/api";
 import { formatDate, timeAgo } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth.store";
+import { toast } from "sonner";
 import type { Note, ApiSuccessResponse } from "@notcast/shared";
 
 const STATUS_ICONS: Record<string, React.ReactNode> = {
@@ -39,6 +51,8 @@ const UPLOAD_TYPE_ICONS: Record<string, string> = {
 
 export default function NotesPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const queryClient = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<Note | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["notes"],
@@ -48,6 +62,20 @@ export default function NotesPage() {
       return Array.isArray(notes) ? notes : [];
     },
     enabled: isAuthenticated,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (noteId: string) => {
+      await apiClient.delete(`/notes/${noteId}`);
+    },
+    onSuccess: () => {
+      toast.success("Not başarıyla silindi");
+      void queryClient.invalidateQueries({ queryKey: ["notes"] });
+      setDeleteTarget(null);
+    },
+    onError: () => {
+      toast.error("Not silinemedi");
+    },
   });
 
   return (
@@ -95,9 +123,9 @@ export default function NotesPage() {
       {data && data.length > 0 && (
         <div className="grid gap-3">
           {data.map((note) => (
-            <Link key={note.id} href={`/notes/${note.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-4 flex items-center gap-4">
+            <Card key={note.id} className="hover:shadow-md transition-shadow group">
+              <CardContent className="p-4 flex items-center gap-4">
+                <Link href={`/notes/${note.id}`} className="flex items-center gap-4 flex-1 min-w-0">
                   <span className="text-2xl flex-shrink-0">
                     {UPLOAD_TYPE_ICONS[note.uploadType] ?? "📝"}
                   </span>
@@ -121,12 +149,52 @@ export default function NotesPage() {
                       {STATUS_LABELS[note.status]}
                     </span>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
+                </Link>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setDeleteTarget(note);
+                  }}
+                  className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                  title="Notu sil"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
+
+      {/* Silme Onay Dialogu */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Notu Sil</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>"{deleteTarget?.title}"</strong> notunu silmek istediğinize emin misiniz?
+              Bu nota ait tüm podcast'ler de kalıcı olarak silinecektir.
+              Bu işlem geri alınamaz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              İptal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Siliniyor...</>
+              ) : (
+                "Evet, Sil"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

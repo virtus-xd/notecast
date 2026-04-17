@@ -291,53 +291,6 @@ function GeneratePodcastContent() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* ElevenLabs Sesleri */}
-              {voices?.some((v) => !(v as unknown as { provider?: string }).provider || (v as unknown as { provider?: string }).provider === "elevenlabs") && (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">ElevenLabs</p>
-                  {voices?.filter((v) => !(v as unknown as { provider?: string }).provider || (v as unknown as { provider?: string }).provider === "elevenlabs").map((voice) => (
-                    <button
-                      key={voice.id}
-                      onClick={() => setSelectedVoiceId(voice.id)}
-                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                        selectedVoiceId === voice.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          selectedVoiceId === voice.id ? "bg-primary/10" : "bg-muted"
-                        }`}>
-                          <Mic2 className={`h-4 w-4 ${selectedVoiceId === voice.id ? "text-primary" : "text-muted-foreground"}`} />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-sm">{voice.name}</p>
-                          {voice.description && (
-                            <p className="text-xs text-muted-foreground truncate">{voice.description}</p>
-                          )}
-                        </div>
-                        <div className="ml-auto flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs text-muted-foreground capitalize">
-                            {voice.gender === "male" ? "Erkek" : "Kadın"}
-                          </span>
-                          <button
-                            onClick={(e) => handlePreview(voice.id, e)}
-                            className="p-1.5 rounded-md hover:bg-muted transition-colors"
-                            title="Önizle"
-                          >
-                            {playingVoiceId === voice.id
-                              ? <Square className="h-3.5 w-3.5 text-primary" />
-                              : <Play className="h-3.5 w-3.5 text-muted-foreground" />
-                            }
-                          </button>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {/* Google Cloud TTS Sesleri */}
               {voices?.some((v) => (v as unknown as { provider?: string }).provider === "google") && (
                 <div className="space-y-2">

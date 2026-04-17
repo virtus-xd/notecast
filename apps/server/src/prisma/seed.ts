@@ -14,68 +14,7 @@ const prisma = new PrismaClient();
 const BCRYPT_SALT_ROUNDS = 12;
 
 // ──────── Varsayılan Türkçe Sesler ────────
-// ElevenLabs Voice Library'den seçilmiş Türkçe uyumlu sesler
 const DEFAULT_VOICES = [
-  {
-    elevenLabsId: "pNInz6obpgDQGcFmaJgB", // Adam
-    name: "Ahmet",
-    description: "Akademik ve net bir erkek sesi. Ders anlatımı için idealdir.",
-    gender: "male",
-    accent: "turkish",
-    category: "academic",
-    isActive: true,
-    sortOrder: 1,
-  },
-  {
-    elevenLabsId: "21m00Tcm4TlvDq8ikWAM", // Rachel
-    name: "Elif",
-    description: "Sıcak ve güven verici bir kadın sesi. Her tür içerik için uygundur.",
-    gender: "female",
-    accent: "turkish",
-    category: "general",
-    isActive: true,
-    sortOrder: 2,
-  },
-  {
-    elevenLabsId: "AZnzlk1XvdvUeBnXmlld", // Domi
-    name: "Deniz",
-    description: "Genç ve enerjik bir kadın sesi. Konuşma stilindeki içerikler için harika.",
-    gender: "female",
-    accent: "turkish",
-    category: "conversational",
-    isActive: true,
-    sortOrder: 3,
-  },
-  {
-    elevenLabsId: "ErXwobaYiN019PkySvjV", // Antoni
-    name: "Mert",
-    description: "Rahatlatıcı ve akıcı bir erkek sesi. Uzun form dinlemeler için idealdir.",
-    gender: "male",
-    accent: "turkish",
-    category: "storytelling",
-    isActive: true,
-    sortOrder: 4,
-  },
-  {
-    elevenLabsId: "MF3mGyEYCl7XYWbV9V6O", // Elli
-    name: "Zeynep",
-    description: "Profesyonel ve güçlü bir kadın sesi. Özet ve tekrar içerikleri için uygun.",
-    gender: "female",
-    accent: "turkish",
-    category: "academic",
-    isActive: true,
-    sortOrder: 5,
-  },
-  {
-    elevenLabsId: "TxGEqnHWrfWFTfGW9XjX", // Josh
-    name: "Can",
-    description: "Derin ve etkileyici bir erkek sesi. Dramatik anlatımlar için mükemmel.",
-    gender: "male",
-    accent: "turkish",
-    category: "storytelling",
-    isActive: true,
-    sortOrder: 6,
-  },
   // ──── Google Cloud TTS — WaveNet Türkçe Sesler ────
   {
     elevenLabsId: "tr-TR-Wavenet-A",
@@ -85,7 +24,7 @@ const DEFAULT_VOICES = [
     accent: "turkish",
     category: "academic",
     isActive: true,
-    sortOrder: 10,
+    sortOrder: 1,
   },
   {
     elevenLabsId: "tr-TR-Wavenet-B",
@@ -95,7 +34,7 @@ const DEFAULT_VOICES = [
     accent: "turkish",
     category: "academic",
     isActive: true,
-    sortOrder: 11,
+    sortOrder: 2,
   },
   {
     elevenLabsId: "tr-TR-Wavenet-C",
@@ -105,17 +44,7 @@ const DEFAULT_VOICES = [
     accent: "turkish",
     category: "conversational",
     isActive: true,
-    sortOrder: 12,
-  },
-  {
-    elevenLabsId: "tr-TR-Wavenet-D",
-    name: "Deniz (Google WaveNet)",
-    description: "Google WaveNet kadın sesi — farklı ton.",
-    gender: "female",
-    accent: "turkish",
-    category: "general",
-    isActive: true,
-    sortOrder: 13,
+    sortOrder: 3,
   },
   {
     elevenLabsId: "tr-TR-Wavenet-E",
@@ -125,7 +54,7 @@ const DEFAULT_VOICES = [
     accent: "turkish",
     category: "storytelling",
     isActive: true,
-    sortOrder: 14,
+    sortOrder: 4,
   },
   // ──── Google Cloud TTS — Chirp 3 HD (API key varsa dinamik eklenir) ────
   // Not: Chirp 3 sesleri server startup'ta seed-google-voices.ts tarafından

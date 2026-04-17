@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import {
@@ -15,14 +15,26 @@ import {
   Search,
   Filter,
   Play,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { formatDate, formatDuration } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import apiClient from "@/lib/api";
 import { usePlayerStore } from "@/stores/player.store";
+import { toast } from "sonner";
 import type { Podcast, ApiSuccessResponse } from "@notcast/shared";
 
 type PodcastWithNote = Podcast & {
@@ -61,8 +73,10 @@ const FILTER_OPTIONS = [
 
 export default function PodcastsPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "READY" | "processing" | "ERROR">("all");
+  const [deleteTarget, setDeleteTarget] = useState<PodcastWithNote | null>(null);
   const { setTrack, track: currentTrack, isPlaying, play, pause } = usePlayerStore();
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -82,6 +96,20 @@ export default function PodcastsPage() {
         ["PENDING", "SCRIPT_WRITING", "GENERATING_AUDIO", "MERGING"].includes(p.status)
       );
       return hasProcessing ? 5000 : false;
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (podcastId: string) => {
+      await apiClient.delete(`/podcasts/${podcastId}`);
+    },
+    onSuccess: () => {
+      toast.success("Podcast başarıyla silindi");
+      void queryClient.invalidateQueries({ queryKey: ["podcasts"] });
+      setDeleteTarget(null);
+    },
+    onError: () => {
+      toast.error("Podcast silinemedi");
     },
   });
 
@@ -212,7 +240,7 @@ export default function PodcastsPage() {
               <Card
                 key={podcast.id}
                 className={cn(
-                  "cursor-pointer hover:border-primary/50 transition-colors",
+                  "cursor-pointer hover:border-primary/50 transition-colors group",
                   currentTrack?.podcastId === podcast.id && "border-primary/40 bg-primary/[0.02]"
                 )}
                 onClick={() => router.push(`/podcasts/${podcast.id}`)}
@@ -278,6 +306,19 @@ export default function PodcastsPage() {
                         {formatDate(podcast.createdAt)}
                       </span>
                     </div>
+
+                    {/* Sil butonu */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteTarget(podcast);
+                      }}
+                      className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                      title="Podcast'i sil"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </CardContent>
               </Card>
@@ -285,6 +326,35 @@ export default function PodcastsPage() {
           })}
         </div>
       )}
+
+      {/* Silme Onay Dialogu */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Podcast'i Sil</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>"{deleteTarget?.title}"</strong> podcast'ini silmek istediğinize emin misiniz?
+              Ses dosyası ve script kalıcı olarak silinecektir.
+              Bu işlem geri alınamaz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              İptal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Siliniyor...</>
+              ) : (
+                "Evet, Sil"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
@@ -17,6 +18,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import apiClient from "@/lib/api";
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -52,7 +63,9 @@ const STYLE_LABEL: Record<string, string> = {
 export default function PodcastDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: podcast, isLoading, refetch } = useQuery({
     queryKey: ["podcast", id],
@@ -74,16 +87,19 @@ export default function PodcastDetailPage() {
 
   const socketStatus = usePodcastStatus(id ?? null);
 
-  const handleDelete = async () => {
-    if (!confirm("Bu podcast'i silmek istediğinize emin misiniz?")) return;
-    try {
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
       await apiClient.delete(`/podcasts/${id}`);
-      toast.success("Podcast silindi");
+    },
+    onSuccess: () => {
+      toast.success("Podcast başarıyla silindi");
+      void queryClient.invalidateQueries({ queryKey: ["podcasts"] });
       router.push("/podcasts");
-    } catch {
+    },
+    onError: () => {
       toast.error("Podcast silinemedi");
-    }
-  };
+    },
+  });
 
   const handleRegenerate = async () => {
     try {
@@ -138,7 +154,12 @@ export default function PodcastDetailPage() {
               <RefreshCw className="h-4 w-4" /> Tekrar Dene
             </Button>
           )}
-          <Button variant="ghost" size="icon" onClick={handleDelete} className="text-destructive hover:text-destructive">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowDeleteDialog(true)}
+            className="text-destructive hover:text-destructive"
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -252,6 +273,35 @@ export default function PodcastDetailPage() {
         <Clock className="h-3.5 w-3.5" />
         {formatDate(podcast.updatedAt, { hour: "2-digit", minute: "2-digit" })} tarihinde güncellendi
       </div>
+
+      {/* Silme Onay Dialogu */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Podcast'i Sil</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>"{podcast.title}"</strong> podcast'ini silmek istediğinize emin misiniz?
+              Ses dosyası ve script kalıcı olarak silinecektir.
+              Bu işlem geri alınamaz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              İptal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Siliniyor...</>
+              ) : (
+                "Evet, Sil"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

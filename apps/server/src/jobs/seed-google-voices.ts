@@ -19,7 +19,7 @@ const WAVENET_VOICES = [
     description: "Google WaveNet kadın sesi — doğal ve akıcı Türkçe.",
     gender: "female",
     category: "academic",
-    sortOrder: 10,
+    sortOrder: 1,
   },
   {
     elevenLabsId: "tr-TR-Wavenet-B",
@@ -27,7 +27,7 @@ const WAVENET_VOICES = [
     description: "Google WaveNet erkek sesi — doğal ve güvenilir.",
     gender: "male",
     category: "academic",
-    sortOrder: 11,
+    sortOrder: 2,
   },
   {
     elevenLabsId: "tr-TR-Wavenet-C",
@@ -35,15 +35,7 @@ const WAVENET_VOICES = [
     description: "Google WaveNet kadın sesi — yumuşak ve sıcak ton.",
     gender: "female",
     category: "conversational",
-    sortOrder: 12,
-  },
-  {
-    elevenLabsId: "tr-TR-Wavenet-D",
-    name: "Deniz (Google WaveNet)",
-    description: "Google WaveNet kadın sesi — farklı ton.",
-    gender: "female",
-    category: "general",
-    sortOrder: 13,
+    sortOrder: 3,
   },
   {
     elevenLabsId: "tr-TR-Wavenet-E",
@@ -51,7 +43,7 @@ const WAVENET_VOICES = [
     description: "Google WaveNet erkek sesi — alternatif erkek tonu.",
     gender: "male",
     category: "storytelling",
-    sortOrder: 14,
+    sortOrder: 4,
   },
 ] as const;
 
@@ -76,13 +68,20 @@ function chirp3Gender(ssmlGender: string): string {
 // ──────── Ana Seed Fonksiyonu ────────
 
 export async function seedGoogleVoices(): Promise<void> {
-  // Eski Neural2 seslerini temizle
+  // Eski Neural2, ElevenLabs ve eski Chirp/WaveNet seslerini temizle
   try {
     await prisma.voice.deleteMany({
-      where: { elevenLabsId: { startsWith: "tr-TR-Neural2-" } },
+      where: {
+        OR: [
+          { elevenLabsId: { startsWith: "tr-TR-Neural2-" } },
+          { provider: "elevenlabs" },
+          { elevenLabsId: { startsWith: "tr-TR-Chirp3-" } },
+          { elevenLabsId: "tr-TR-Wavenet-D" },
+        ],
+      },
     });
-  } catch {
-    // tablo yoksa devam
+  } catch (err) {
+    logger.warn({ err }, "Eski sesler temizlenirken hata oluştu");
   }
 
   // 1. WaveNet seslerini ekle (her zaman)
@@ -125,10 +124,14 @@ export async function seedGoogleVoices(): Promise<void> {
       return;
     }
 
-    logger.info(`${chirp3Voices.length} adet Chirp 3 sesi bulundu`);
+    const maleChirp3 = chirp3Voices.filter((v) => chirp3Gender(v.ssmlGender) === "male").slice(0, 2);
+    const femaleChirp3 = chirp3Voices.filter((v) => chirp3Gender(v.ssmlGender) === "female").slice(0, 2);
+    const selectedChirp3 = [...maleChirp3, ...femaleChirp3];
 
-    for (let i = 0; i < chirp3Voices.length; i++) {
-      const v = chirp3Voices[i]!;
+    logger.info(`${selectedChirp3.length} adet Chirp 3 sesi eklenecek.`);
+
+    for (let i = 0; i < selectedChirp3.length; i++) {
+      const v = selectedChirp3[i]!;
       const { name, category } = chirp3DisplayName(v.name);
       const gender = chirp3Gender(v.ssmlGender);
 
@@ -145,7 +148,7 @@ export async function seedGoogleVoices(): Promise<void> {
             provider: "google",
             category,
             isActive: true,
-            sortOrder: 20 + i,
+            sortOrder: 5 + i,
           },
         });
         logger.info(`Google Chirp 3 ses eklendi: ${name}`);
