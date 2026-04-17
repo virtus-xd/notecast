@@ -73,6 +73,11 @@ const EnvSchema = z.object({
   BULL_CONCURRENCY: z.coerce.number().int().positive().default(3),
   JOB_RETRY_ATTEMPTS: z.coerce.number().int().positive().default(3),
   JOB_RETRY_DELAY_MS: z.coerce.number().int().positive().default(5000),
+
+  // Stripe (opsiyonel — premium üyelik sistemi)
+  STRIPE_SECRET_KEY: z.string().optional().default(""),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().default(""),
+  STRIPE_PRICE_ID: z.string().optional().default(""),
 });
 
 const parseResult = EnvSchema.safeParse(process.env);

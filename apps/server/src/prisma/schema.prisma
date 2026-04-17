@@ -54,11 +54,14 @@ model User {
   resetToken     String?
   resetTokenExp  DateTime?
 
-  preferredVoiceId String?
+  preferredVoiceId  String?
+  stripeCustomerId  String?   @unique
 
-  notes    Note[]
-  podcasts Podcast[]
-  sessions Session[]
+  notes         Note[]
+  podcasts      Podcast[]
+  sessions      Session[]
+  subscriptions Subscription[]
+  transactions  Transaction[]
 
   monthlyCredits  Int      @default(3)
   creditsUsed     Int      @default(0)
@@ -166,4 +169,49 @@ model SystemConfig {
   id    String @id @default(cuid())
   key   String @unique
   value String @db.Text
+}
+
+// ──── Abonelik Sistemi ────
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  INCOMPLETE
+  TRIALING
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeSubscriptionId   String             @unique
+  stripePriceId          String
+  status                 SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart     DateTime
+  currentPeriodEnd       DateTime
+  cancelAtPeriodEnd      Boolean            @default(false)
+  canceledAt             DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Transaction {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripePaymentId     String   @unique
+  amount              Int      // kuruş cinsinden (örn: 999 = 9.99 TL)
+  currency            String   @default("usd")
+  status              String   // succeeded, failed, refunded
+  description         String?
+  invoiceUrl          String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt(sort: Desc)])
 }

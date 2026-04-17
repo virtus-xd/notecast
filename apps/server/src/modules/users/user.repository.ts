@@ -24,6 +24,7 @@ export type UpdateUserData = Partial<{
   resetToken: string | null;
   resetTokenExp: Date | null;
   preferredVoiceId: string | null;
+  stripeCustomerId: string | null;
   monthlyCredits: number;
   creditsUsed: number;
   creditsResetAt: Date;

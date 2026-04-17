@@ -36,6 +36,7 @@ import { usersRouter } from "./modules/users/user.routes";
 import { notesRouter } from "./modules/notes/note.routes";
 import { podcastsRouter } from "./modules/podcasts/podcast.routes";
 import { voicesRouter } from "./modules/voices/voice.routes";
+import { paymentsRouter } from "./modules/payments/payment.routes";
 
 // ──────── Passport Kurulumu ────────
 passport.use(localStrategy);
@@ -109,6 +110,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/podcasts", podcastsRouter);
 app.use("/api/voices", voicesRouter);
+app.use("/api/payments", paymentsRouter);
 
 // ──────── 404 Handler ────────
 app.use((_req, res) => {

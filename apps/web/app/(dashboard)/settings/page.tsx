@@ -141,7 +141,25 @@ export default function SettingsPage() {
             </p>
           </div>
           {user?.role === "FREE" && (
-            <Button size="sm" variant="outline">Premium'a Geç</Button>
+            <Button size="sm" variant="outline" onClick={() => window.location.href = "/pricing"}>
+              Premium'a Geç
+            </Button>
+          )}
+          {user?.role === "PREMIUM" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                try {
+                  const { data } = await apiClient.post<{ success: boolean; data: { url: string } }>("/payments/portal");
+                  window.location.href = data.data.url;
+                } catch {
+                  toast.error("Portal açılamadı");
+                }
+              }}
+            >
+              Aboneliği Yönet
+            </Button>
           )}
         </CardContent>
       </Card>

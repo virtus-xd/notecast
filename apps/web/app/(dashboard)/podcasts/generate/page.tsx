@@ -14,6 +14,7 @@ import {
   AlignLeft,
   Play,
   Square,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -147,6 +148,8 @@ function GeneratePodcastContent() {
   const selectedNote = notesData?.find((n) => n.id === selectedNoteId);
 
   // Podcast oluştur
+  const [showUpgrade, setShowUpgrade] = useState(false);
+
   const generateMutation = useMutation({
     mutationFn: async () => {
       const { data } = await apiClient.post<ApiSuccessResponse<{ podcast: Podcast }>>(
@@ -164,8 +167,12 @@ function GeneratePodcastContent() {
       setCreatedPodcastId(podcast.id);
       toast.success("Podcast oluşturulmaya başlandı");
     },
-    onError: (err: { response?: { data?: { error?: { message?: string } } } }) => {
-      toast.error(err.response?.data?.error?.message ?? "Podcast oluşturulamadı");
+    onError: (err: { response?: { status?: number; data?: { error?: { message?: string } } } }) => {
+      if (err.response?.status === 403) {
+        setShowUpgrade(true);
+      } else {
+        toast.error(err.response?.data?.error?.message ?? "Podcast oluşturulamadı");
+      }
     },
   });
 
@@ -341,6 +348,29 @@ function GeneratePodcastContent() {
           <p><span className="text-muted-foreground">Stil:</span> <span className="font-medium">{STYLES.find((s) => s.id === selectedStyle)?.label}</span></p>
           <p><span className="text-muted-foreground">Ses:</span> <span className="font-medium">{voices?.find((v) => v.id === selectedVoiceId)?.name}</span></p>
         </div>
+      )}
+
+      {/* Kredi limiti aşıldı — Upgrade Banner */}
+      {showUpgrade && (
+        <Card className="border-2 border-yellow-300 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/20">
+          <CardContent className="p-6 text-center space-y-3">
+            <Crown className="h-8 w-8 text-yellow-600 mx-auto" />
+            <div>
+              <p className="font-semibold text-yellow-900 dark:text-yellow-100">
+                Aylık podcast limitine ulaştınız
+              </p>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                Premium'a geçerek sınırsız podcast oluşturun, öncelikli işleme kuyruğundan yararlanın.
+              </p>
+            </div>
+            <Button
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+              onClick={() => { window.location.href = "/pricing"; }}
+            >
+              <Crown className="h-4 w-4" /> Premium'a Yükselt
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       <Button
